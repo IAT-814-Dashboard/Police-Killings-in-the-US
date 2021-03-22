@@ -9,82 +9,173 @@ from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__)
 
-#-----------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------
 
-df = pd.read_csv('fatal-police-shootings-data.csv')
-df['year'] = pd.DatetimeIndex(df['date']).year
-df = df.groupby(['state','year'])['id'].count().reset_index().rename(columns={'id':'count'})
+styles = {
+    'pre': {
+        'border': 'thin lightgrey solid',
+        'overflowX': 'scroll'
+    }
+}
 
-unique_years = list(df['year'].unique())
-year_marks = {}
-for i in range(len(unique_years)):
-    year_marks[unique_years[i]] = unique_years[i]
 
-#-----------------------------------------------------------
+df = pd.read_json('police-killings-integrated-dataset-2021-03-20.json.gz')
+
+#Pie chart
+df_group_by_race = df.groupby('race')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+pie_chart = go.Figure(data=[go.Pie(labels=df_group_by_race['race'], values=df_group_by_race['count'], title='Ethnicity Versus Killings', textinfo='label+percent',
+                             insidetextorientation='radial')])
+
+#Choropleth map
+df_group_by_state = df.groupby('state')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+choropleth_map = go.Figure(data=go.Choropleth(
+    locations=df_group_by_state['state'],
+    z = df_group_by_state['count'],
+    locationmode = 'USA-states',
+    colorscale = 'Blues',
+    colorbar_title = "Number of Deaths"
+))
+choropleth_map.update_layout(
+    title_text = 'Police Shooting Deaths by US States',
+    geo_scope='usa'
+)
+choropleth_map.update_layout(clickmode='event+select')
+
+#stacked bar chart
+df_group_by_age_gender = df.groupby(['age_bins','gender'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
+stacked_bar = px.bar(df_group_by_age_gender, x="age_bins", y="count", color="gender",
+            hover_data=['count'], barmode = 'stack')
+ 
+
+#-----------------------------------------------------------------------------------------------------------------------------------
 
 app.layout = html.Div([
-    html.H1("Starting with the Project", style={'text_align':'center'}),
     
-    
-     html.P([
-                    html.Label("Year"),
-                     dcc.RangeSlider(
-                    id = 'year_select',
-                    min=2015,
-                    max=2021,
-                    step=None,
-                    marks={
-                                2015: '2015',
-                                2016: '2016',
-                                2017: '2017',
-                                2018: '2018',
-                                2019: '2019',
-                                2020: '2020',
-                                2021: '2021'
-                    },
-                    value=[2015, 2021]
-    )], style = {'width' : '80%',
-                                    'fontSize' : '20px',
-                                    'padding-left' : '100px',
-                                    'display': 'inline-block'}),
-    html.Div(id='output_container', children=[]),
-    html.Br(),
-    
-    dcc.Graph(id='my_map',figure={})
-      
+    html.Div([
+            dcc.Graph(
+                        id='pie-chart-interaction',
+                        figure=pie_chart
+            ),
+            
+            dcc.Graph(
+                        id='stacked-bar-chart',
+                        figure=stacked_bar
+            ),
+    ], style={'columnCount': 2}),
+            
+    dcc.Graph(
+                id='choropleth-map',
+                figure=choropleth_map
+    ),
 ])
 
-#-------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------
 
 @app.callback(
-    [Output(component_id='output_container', component_property='children'),
-     Output(component_id='my_map', component_property='figure')],
-    [Input(component_id='year_select', component_property='value')]
-)
-def update_graph(option_slctd):
-
-    container = str(option_slctd[0]) + "to" + str(option_slctd[1])
-
+    Output('choropleth-map', 'figure'),
+    [Input('pie-chart-interaction', 'clickData'),
+    Input('stacked-bar-chart', 'clickData')], prevent_initial_call=True)
+def update_choropleth_map(pieClick, stackBarClick):
     
-    dff = df.copy()
-    dff = dff[(dff["year"] >=option_slctd[0]) & (dff["year"] >=option_slctd[1])]
-
-    # Plotly Express
-    fig = px.choropleth(
-        data_frame=dff,
-        locationmode='USA-states',
-        locations='state',
-        scope="usa",
-        color='count',
-        hover_data=['state'],
-        color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'state': 'count'},
-        template='plotly_dark'
-    )
+    print("Inside update choropleth function")
+    print(pieClick)
+    print(stackBarClick)
     
-    return container, fig
+    if pieClick is not None:
+        filter_by_race = df[df['race']==str(pieClick['points'][0]['label'])]
+        df_group_by_state = filter_by_race.groupby('state')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+        choropleth_map = go.Figure(data=go.Choropleth(
+        locations=df_group_by_state['state'],
+        z = df_group_by_state['count'],
+        locationmode = 'USA-states',
+        colorscale = 'Blues',
+        colorbar_title = "Deaths"
+        ))
+        choropleth_map.update_layout(
+            title_text = 'Police Shooting Deaths by US States',
+            geo_scope='usa'
+        )
+        
+    if stackBarClick is not None:
+        gender_id = stackBarClick['points'][0]['curveNumber']
+        if gender_id==0:
+            gender='Female'
+        else:
+            gender='Male'
+            
+        age = stackBarClick['points'][0]['x']
+        filter_by_age_gender = df[(df['gender']==gender) & (df['age_bins']==age)]
+        df_group_by_state = filter_by_age_gender.groupby('state')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+        
+        choropleth_map = go.Figure(data=go.Choropleth(
+        locations=df_group_by_state['state'],
+        z = df_group_by_state['count'],
+        locationmode = 'USA-states',
+        colorscale = 'Blues',
+        colorbar_title = "Deaths"
+        ))
+        choropleth_map.update_layout(
+            title_text = 'Police Shooting Deaths by US States',
+            geo_scope='usa'
+        )
+    return choropleth_map
+        
+@app.callback(
+    Output('pie-chart-interaction', 'figure'),
+    [Input('choropleth-map', 'clickData'),
+     Input('stacked-bar-chart', 'clickData')], prevent_initial_call=True)
+def update_pie_chart(mapClick, stackBarClick):
+    print("Inside update pie chart function")
+    print(mapClick)
+    print(stackBarClick)
+    if mapClick is not None:
+        filter_by_location = df[df['state']==mapClick['points'][0]['location']]
+        df_group_by_race = filter_by_location.groupby('race')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+        pie_chart = go.Figure(data=[go.Pie(labels=df_group_by_race['race'], values=df_group_by_race['count'], title='Ethnicity Versus Killings', textinfo='label+percent',
+                                 insidetextorientation='radial')])
+    
+    if stackBarClick is not None:
+        gender_id = stackBarClick['points'][0]['curveNumber']
+        if gender_id==0:
+            gender='Female'
+        else:
+            gender='Male'
+            
+        age = stackBarClick['points'][0]['x']
+        filter_by_age_gender = df[(df['gender']==gender) & (df['age_bins']==age)]
+        df_group_by_race = filter_by_age_gender.groupby('race')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+        
+        pie_chart = go.Figure(data=[go.Pie(labels=df_group_by_race['race'], values=df_group_by_race['count'], title='Ethnicity Versus Killings', textinfo='label+percent',
+                                 insidetextorientation='radial')])
+    return pie_chart
 
-#--------------------------------------------------------------------
+@app.callback(
+    Output('stacked-bar-chart', 'figure'),
+    [Input('choropleth-map', 'clickData'),
+     Input('pie-chart-interaction', 'clickData')], prevent_initial_call=True)
+def update_bar_chart(mapClick, pieClick):
+    print("Inside update bar chart function")
+    print(mapClick)
+    print(pieClick)
+    
+    if mapClick is not None:
+        filter_by_location = df[df['state']==mapClick['points'][0]['location']]
+        df_group_by_age_gender = filter_by_location.groupby(['age_bins','gender'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
+        stacked_bar = px.bar(df_group_by_age_gender, x="age_bins", y="count", color="gender",
+                            hover_data=['count'], barmode = 'stack')
+        
+        
+    if pieClick is not None:
+        filter_by_race = df[df['race']==str(pieClick['points'][0]['label'])]
+        df_group_by_age_gender = filter_by_race.groupby(['age_bins','gender'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
+        
+        stacked_bar = px.bar(df_group_by_age_gender, x="age_bins", y="count", color="gender",
+                            hover_data=['count'], barmode = 'stack')
+        
+    return stacked_bar
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     app.run_server(debug=True)
     
