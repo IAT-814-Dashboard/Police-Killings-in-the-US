@@ -39,7 +39,8 @@ def create_choropleth_map(df):
     ))
     choropleth_map.update_layout(
         title_text = 'Police Shooting Deaths by US States',
-        geo_scope='usa'
+        geo_scope='usa',
+        clickmode='event+select'
     )
     return choropleth_map
 
@@ -48,8 +49,8 @@ def create_stacked_bar_chart(df):
     df_group_by_age_gender = df.groupby(['age_bins','gender'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
     stacked_bar = px.bar(df_group_by_age_gender, x="age_bins", y="count", color="gender",
             hover_data=['count'], barmode = 'stack', custom_data=['gender'])
+    stacked_bar.update_layout(clickmode='event+select')
     return stacked_bar
-
 
 #line chart
 def create_line_chart(df):
@@ -111,9 +112,9 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
     )])
     fig.update_layout(
             title = title
+
             )
     return fig
-
 
 def create_sankey_diagram(df):
     df_grouped_sankey = df.groupby(['race','age_bins','gender','signs_of_mental_illness'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
@@ -156,7 +157,8 @@ app.layout = html.Div([
 
             dcc.Graph(
                     id='sankey-diagram',
-                    figure=create_sankey_diagram(df)
+                    figure=create_sankey_diagram(df),
+                    config={'editable':True}
             )
     ], style={'columnCount': 2}),
 
@@ -164,13 +166,15 @@ app.layout = html.Div([
             dcc.Graph(
                     id='pie-chart-interaction',
                     figure=create_pie_chart(df),
-                    config={#'responsive': True,
-                                'doubleClick':'reset'},
+
+                    #config={#'responsive': True,
+                    #            'doubleClick':'reset'},
             ),
 
             dcc.Graph(
                     id='stacked-bar-chart',
                     figure=create_stacked_bar_chart(df),
+                    config={'doubleClick':'reset'}
             ),
     ], style={'columnCount': 2}),
 
