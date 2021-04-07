@@ -1,8 +1,8 @@
 import pandas as pd
-import plotly.express as px  # (version 4.7.0)
+import plotly.express as px
 import plotly.graph_objects as go
 
-import dash  # (version 1.12.0) pip install dash
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
@@ -155,13 +155,12 @@ app.layout = html.Div([
             'textAlign': 'center',
             'color': colors['text']
         }),
-    html.Div([
-        dcc.Loading(dcc.Graph(
+
+    dcc.Loading(dcc.Graph(
                     id='line-chart',
                     figure=create_line_chart(df)
-                    )),
-        html.Button('Reset',id='reset_button',n_clicks=0),
-    ], style={'marginTop':20, 'marginLeft':20}),
+                )),
+    html.Button('Reset',id='reset_button',n_clicks=0),
 
     dcc.Loading(dcc.Graph(
             id='gun-line-chart',
@@ -211,8 +210,8 @@ app.layout = html.Div([
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_gun_data_line_chart(lineChartClick, n_clicks):
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if n_clicks>0:
-        n_clicks=0
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
         return create_line_chart_gun_data(gun_data)
     if triggered_element=='line-chart':
         startDate = lineChartClick['xaxis.range[0]']
@@ -229,8 +228,8 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
     Input('choropleth-map','clickData'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_sankey_diagram(pieClick, stackBarClick, lineChartClick, mapClick, n_clicks):
-    if n_clicks>0:
-        n_clicks=0
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
         return create_sankey_diagram(df)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element =='pie-chart-interaction':
@@ -266,8 +265,8 @@ def update_sankey_diagram(pieClick, stackBarClick, lineChartClick, mapClick, n_c
     Input('line-chart','relayoutData'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_choropleth_map(pieClick, stackBarClick, lineChartClick, n_clicks):
-    if n_clicks>0:
-        n_clicks=0
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
         viz_states['choropleth_map'] = 0
         return create_choropleth_map(df)
     if viz_states['choropleth_map']==1:
@@ -301,8 +300,8 @@ def update_choropleth_map(pieClick, stackBarClick, lineChartClick, n_clicks):
      Input('line-chart','relayoutData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_pie_chart(mapClick, stackBarClick, lineChartClick, n_clicks):
-    if n_clicks>0:
-        n_clicks=0
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
         viz_states['pie_chart'] = 0
         return create_pie_chart(df)
     if viz_states['pie_chart']==1:
@@ -336,8 +335,8 @@ def update_pie_chart(mapClick, stackBarClick, lineChartClick, n_clicks):
      Input('line-chart','relayoutData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_stacked_bar_chart(mapClick, pieClick, lineChartClick, n_clicks):
-    if n_clicks>0:
-        n_clicks=0
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
         viz_states['stacked_bar_chart'] = 0
         return create_stacked_bar_chart(df)
     if viz_states['stacked_bar_chart']==1:
@@ -370,8 +369,8 @@ def update_stacked_bar_chart(mapClick, pieClick, lineChartClick, n_clicks):
      Input('stacked-bar-chart','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_line_chart(mapClick, pieClick, stackBarClick, n_clicks):
-    if n_clicks>0:
-        n_clicks = 0
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
         viz_states['line_chart'] = 0
         return create_line_chart(df)
     if viz_states['line_chart']==1:
