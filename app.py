@@ -20,9 +20,6 @@ viz_states = {'pie_chart':0, 'choropleth_map':0, 'line_chart':0, 'stacked_bar_ch
 app.layout = html.Div([
 
     html.Div([
-
-        #html.Div([], className = 'col-2'), #Same as img width, allowing to have the title centrally aligned
-
         html.Div([
             html.H1(children='IAT 814: Police Killings in the United States',
                     style = {'textAlign' : 'center',
@@ -50,12 +47,32 @@ app.layout = html.Div([
                  'background-color':'#c8d7e3',
                   'font-family': 'Helvetica Neue',
                   'font-size': '40px',
-
                   'padding':'20px',
                   'border': 'solid black',
                   'border-color': 'black',
                   'border-width': '5px 5px 0px 5px',
                   }),
+        html.Div([
+            html.H3('Top 5 By Race',
+                    style={
+                            'textAlign':'center',
+                            'color': 'black',
+                            'font-family': 'Helvetica Neue',
+                            'font-size': '32px','font-weight': 'bold',
+                            'line-height': '1',
+                            }),
+            dcc.Loading(dcc.Graph(
+                                id='top-5-race',
+                                figure=top_5_by_race(df)
+            ))
+        ], style={'flex':'40%',
+                    'background-color':'#c8d7e3',
+                    'border': 'solid black',
+                    'border-color': 'black',
+                    'border-width': ' 5px 5px 0px 0px',
+                    'padding':'20px',
+                    'margin-left': '0px',
+                    'margin-right': '0px'}),
 
         html.Div([
             html.H1(children='Total Number of Police Killings'),
@@ -70,7 +87,6 @@ app.layout = html.Div([
             html.Button('Reset All',id='reset_button',n_clicks=0,
                         style={'background-color': '#DADADA',
                                 'border':'none',
-
                                 'padding': '15px 32px',
                                 'margin-top':'10px',
                                 'text-align': 'center',
@@ -91,14 +107,14 @@ app.layout = html.Div([
            'height':'50%',
            'margin-left': '0px',
            'margin-right': '0px',
-
            }
     ),
+
 
     html.Div([
             html.H3('Police Killings by Year',
                     style={
-                            'textAlign' : 'center',
+                            'textAlign':'center',
                             'color': 'black',
                             'font-family': 'Helvetica Neue',
                             'font-size': '32px','font-weight': 'bold',
@@ -177,8 +193,6 @@ app.layout = html.Div([
                             'border-width': '0px 5px 5px 0px',
                             'padding':'20px', 'background-color':'#c8d7e3'
                             }
-                            #'border-radius': '15px'}
-
                 , className='sankey-block'),
 
     ],
@@ -269,6 +283,7 @@ def update_indicator_graph(lineChartClick, pieClick, stackBarClick, mapClick, n_
         startDate = lineChartClick['xaxis.range[0]']
         endDate = lineChartClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
+        #df = filter_by_date
         updated_indicator_graph = indicator_graph(len(filter_by_date))
         return updated_indicator_graph
     elif triggered_element =='pie-chart-interaction':
@@ -283,9 +298,10 @@ def update_indicator_graph(lineChartClick, pieClick, stackBarClick, mapClick, n_
     elif triggered_element == 'choropleth-map':
         filter_by_location = df[df['state']==mapClick['points'][0]['location']]
         updated_indicator_graph = indicator_graph(len(filter_by_location))
+        #df = filter_by_location
         return updated_indicator_graph
 
-
+#update line hcart for gun purchase
 @app.callback(
     Output('gun-line-chart', 'figure'),
     [Input('line-chart','relayoutData'),
@@ -302,6 +318,7 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
         gun_data_line_chart = create_line_chart_gun_data(filter_gun_data_by_date)
         return gun_data_line_chart
 
+#update sankey diagram
 @app.callback(
     Output('sankey-diagram', 'figure'),
     [Input('pie-chart-interaction', 'clickData'),
@@ -372,7 +389,6 @@ def update_choropleth_map(pieClick, stackBarClick, lineChartClick, n_clicks):
         choropleth_map = create_choropleth_map(filter_by_date)
         viz_states['line_chart'] = 1
         return choropleth_map
-
 
 #update pie chart
 @app.callback(
@@ -478,5 +494,5 @@ def update_line_chart(mapClick, pieClick, stackBarClick, n_clicks):
 #-----------------------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    #app.run_server(debug=True)
     app.run_server(debug=True)
+    #app.run_server(debug=False)
