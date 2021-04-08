@@ -10,8 +10,8 @@ from visualization_helper_functions import *
 
 app = dash.Dash(__name__)
 
-df = pd.read_json('police-killings-integrated-dataset-2021-03-20.json.gz')
-gun_data = pd.read_csv('gun-data-by-year.csv')
+df = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
+gun_data = pd.read_csv('data/gun-data-by-year.csv')
 
 viz_states = {'pie_chart':0, 'choropleth_map':0, 'line_chart':0, 'stacked_bar_chart':0}
 
