@@ -14,7 +14,7 @@ def get_age_and_gender(stackBarClick):
 
 def indicator_graph(number):
     indicator_figure = go.Figure(go.Indicator(
-    mode = "gauge+number",
+    mode = "number",
     value = number,
     number = {'prefix': ""},
     visible=True))
@@ -24,6 +24,13 @@ def indicator_graph(number):
                                           'tickmode':'auto'}})
     indicator_figure.update_layout(font={'size':5,'color':'black'})
     return indicator_figure
+
+def top_5_by_race(df):
+    df_group_by_race = df.groupby('race')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+    top_5_by_race_bar = px.bar(df_group_by_race, x="race", y="count", title="Top 5 By Race", color='race')
+    top_5_by_race_bar.update_layout(clickmode='event+select',
+                              margin={"r":0,"t":0,"l":0,"b":0})
+    return top_5_by_race_bar
 
 #Choropleth map
 def create_choropleth_map(df):
@@ -43,12 +50,12 @@ def create_choropleth_map(df):
     )
     choropleth_map.update_layout(plot_bgcolor="#d1dade",margin=dict(t=0,l=80,b=0,r=40),
                             font_family="Georgia",
-                            title_font_family="Georgia",font_size=20)
+                            title_font_family="Georgia",font_size=20, dragmode=False)
     return choropleth_map
 
 def create_line_chart(df):
     df_group_by_date = df.groupby('date')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-    line_chart = go.Figure(data=go.Scatter(x=df_group_by_date['date'], y=df_group_by_date['count'], mode='lines',
+    line_chart = go.Figure(data=go.Scatter(x=df_group_by_date['date'], y=df_group_by_date['count'], mode='lines+markers', fill='tozeroy',
                             line={'color':'#AC3E31'}))
     line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",margin=dict(t=0,l=80,b=0,r=40),
                             xaxis_title='Year',
@@ -58,7 +65,7 @@ def create_line_chart(df):
     return line_chart
 
 def create_line_chart_gun_data(df_gun):
-    gun_data_line_chart = go.Figure(data=go.Scatter(x=df_gun['date'], y=df_gun['totals'], line={'color':'#AC3E31'}))
+    gun_data_line_chart = go.Figure(data=go.Scatter(x=df_gun['date'], y=df_gun['totals'], fill='tozeroy',  mode='lines+markers', line={'color':'#AC3E31'}))
     gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",margin=dict(t=0,l=80,b=0,r=40),
                             xaxis_title='Year',
                             yaxis_title='Number of Gun Purchase',
@@ -155,17 +162,3 @@ def create_sankey_diagram(df):
                                )
 
     return sankey_diagram
-
-
-def blank_fig(height):
-    """
-    Build blank figure with the requested height
-    """
-    return {
-        "data": [],
-        "layout": {
-            "height": height,
-            "xaxis": {"visible": False},
-            "yaxis": {"visible": False},
-        },
-    }
