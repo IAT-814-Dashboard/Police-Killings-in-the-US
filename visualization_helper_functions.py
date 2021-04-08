@@ -20,7 +20,7 @@ def indicator_graph(number):
     visible=True))
     indicator_figure.update_traces(gauge={'bordercolor':'black', 'borderwidth':10,
                                           'bar':{'color':'#0091D5'},
-                                          'axis':{'range':[0,6570],
+                                          'axis':{'range':[0,6571],
                                           'tickmode':'auto'}})
     indicator_figure.update_layout(font={'size':5,'color':'black'})
     return indicator_figure
