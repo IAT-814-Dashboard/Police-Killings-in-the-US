@@ -7,8 +7,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from visualization_helper_functions import *
+import dash_bootstrap_components as dbc
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 df = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
 gun_data = pd.read_csv('data/gun-data-by-year.csv')
