@@ -35,9 +35,13 @@ app.layout = html.Div([
         ],
         className = 'heading-row',
         style = {'height' : '4%',
+                'border': 'solid black',
+                'border-color': 'black',
+                'border-width': ' 10px 10px 10px 10px',
                 'background-color' : '#488A99',
-                'margin-left':'0px',
-                'margin-right':'0px'}
+                'margin-top': '75px',
+                'margin-left': '35px',
+                'margin-right': '35px',}
     ),
 
     html.Div([
@@ -46,12 +50,13 @@ app.layout = html.Div([
         ], style={'float':'left','flex':'60%',
                  'text-align':'justify',
                  'background-color':'#c8d7e3',
+                 'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                   'font-family': 'Helvetica Neue',
                   'font-size': '40px',
                   'padding':'20px',
-                  'border': 'solid black',
-                  'border-color': 'black',
-                  'border-width': '5px 5px 0px 5px',
+                  'border': 'solid white',
+                  'border-color': 'white',
+                  'border-width': '5px 5px 5px 5px',
                   }),
         html.Div([
             html.H3('Top 5 By Race',
@@ -68,12 +73,13 @@ app.layout = html.Div([
             ))
         ], style={'flex':'40%',
                     'background-color':'#c8d7e3',
-                    'border': 'solid black',
-                    'border-color': 'black',
-                    'border-width': ' 5px 5px 0px 0px',
+                    'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                    'border': 'solid white',
+                    'border-color': 'white',
+                    'border-width': ' 5px 5px 5px 5px',
                     'padding':'20px',
-                    'margin-left': '0px',
-                    'margin-right': '0px'}),
+                    'margin-left': '20px',
+                    'margin-right': '20px',}),
 
         html.Div([
             html.H1(children='Total Number of Police Killings'),
@@ -82,13 +88,14 @@ app.layout = html.Div([
                                 id="indicator-graph",
                                 figure=indicator_graph(len(df)),
                                 )),
-                    style={'border': 'solid black',
-                    'border-color': 'black',
-                    'border_radus':'50%'}),
+                    style={'border': 'solid white',
+                    'border-color': 'white',
+                    'border_radius':'50%'}),
             html.Button('Reset All',id='reset_button',n_clicks=0,
                         style={'background-color': '#DADADA',
                                 'border':'none',
                                 'padding': '15px 32px',
+                                'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                                 'margin-top':'10px',
                                 'text-align': 'center',
                                 'text-decoration': 'none',
@@ -98,16 +105,18 @@ app.layout = html.Div([
             style={'flex':'40%',
                     'background-color': '#c8d7e3',
                     'text-align':'center',
-                    'border': 'solid black',
-                    'border-color': 'black',
-                    'border-width': ' 5px 5px 0px 0px',
+                    'border': 'solid white',
+                    'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                    'border-color': 'white',
+                    'border-width': ' 5px 5px 5px 5px',
                     'padding':'20px'})
     ],
     className='information-bar',
     style={'display':'flex',
            'height':'50%',
-           'margin-left': '0px',
-           'margin-right': '0px',
+           'margin-top':'30px',
+           'margin-left': '35px',
+           'margin-right': '35px',
            }
     ),
 
@@ -118,7 +127,9 @@ app.layout = html.Div([
                             'textAlign':'center',
                             'color': 'black',
                             'font-family': 'Helvetica Neue',
-                            'font-size': '32px','font-weight': 'bold',
+                            'font-size': '38px',
+                            'margin-bottom':'10px',
+                            'font-weight': 'bold',
                             'line-height': '1',
                             }),
             dcc.Loading(dcc.Graph(
@@ -127,15 +138,15 @@ app.layout = html.Div([
             ))
 
     ], className='line-chart-block', style={'background-color':'#c8d7e3',
-                                            'border': 'solid black',
+                                            'border': 'solid white',
                                             'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                                            'border-color': 'black',
+                                            'border-color': 'white',
                                             'border-width': ' 5px',
                                             'padding':'20px',
-                                            'margin-left': '0px',
-                                            'margin-right': '0px'}),
-                                            #'margin-top':'80px',
-                                            #'margin-bottom':'80px'
+                                            'margin-top':'30px',
+                                            'margin-left': '35px',
+                                            'margin-right': '35px',}),
+
 
     html.Div([
             html.H3('Purchase of Gun By Year',
@@ -150,10 +161,13 @@ app.layout = html.Div([
                     figure=create_line_chart_gun_data(gun_data)
             )),
     ], className='gun-data-line-chart-block',style={'background-color':'#c8d7e3',
-                                                    'margin-left':'0px','margin-right': '0px',
-                                                    'border': 'solid black',
-                                                    'border-color': 'black',
-                                                    'border-width': ' 0px 5px 5px 5px',
+                                                    'margin-top':'30px',
+                                                    'margin-left': '35px',
+                                                    'margin-right': '35px',
+                                                    'border': 'solid white',
+                                                    'border-color': 'white',
+                                                    'border-width': ' 5px 5px 5px 5px',
+                                                    'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                                                     'padding':'20px'}),
 
     html.Div([
@@ -168,10 +182,12 @@ app.layout = html.Div([
                 dcc.Graph(
                 id='choropleth-map',
                 figure=create_choropleth_map(df),
-                )], style={'flex':'50%',
-                            'border': 'solid black',
-                            'border-color': 'black',
-                            'border-width': ' 0px 5px 5px 5px',
+                )], style={'flex':'30%',
+                            'margin-right':'20px',
+                            'border': 'solid white',
+                            'border-color': 'white',
+                            'border-width': ' 5px 5px 5px 5px',
+                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                             'padding':'20px', 'background-color':'#c8d7e3'}
                 ,className='map-block'),
 
@@ -188,10 +204,11 @@ app.layout = html.Div([
                         figure=create_sankey_diagram(df),
                         config={'editable':True},
 
-                )], style={'flex':'50%',
-                            'border': 'solid black',
-                            'border-color': 'black',
-                            'border-width': '0px 5px 5px 0px',
+                )], style={'flex':'70%',
+                            'border': 'solid white',
+                            'border-color': 'white',
+                            'border-width': '5px 5px 5px 0px',
+                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                             'padding':'20px', 'background-color':'#c8d7e3'
                             }
                 , className='sankey-block'),
@@ -199,9 +216,10 @@ app.layout = html.Div([
     ],
     className='sankey-map',
     style={'display':'flex',
-           'height':'80%',
-           'margin-left': '0px',
-           'margin-right': '0px',}
+           'height':'100%',
+           'margin-top':'30px',
+           'margin-left': '35px',
+           'margin-right': '35px',}
            #'margin-top':'80px',
            #'margin-bottom':'70px'}
     ),
@@ -218,13 +236,14 @@ app.layout = html.Div([
                 dcc.Graph(
                         id='pie-chart-interaction',
                         figure=create_pie_chart(df),
-                        style={'flex':'50%'}
+                        style={'flex':'20%'}
                         #config={#'responsive': True,
                         #            'doubleClick':'reset'},
-                )], style={'flex':'50%',
-                            'border': 'solid black',
-                            'border-color': 'black',
-                            'border-width': '0px 5px 5px 5px',
+                )], style={'flex':'20%',
+                            'border': 'solid white',
+                            'border-color': 'white',
+                            'border-width': '5px 5px 5px 5px',
+                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                             'padding':'20px', 'background-color':'#c8d7e3'
                             }
                             #'border-radius': '15px'}
@@ -244,10 +263,11 @@ app.layout = html.Div([
                         figure=create_stacked_bar_chart(df),
                         config={'doubleClick':'reset'},
                         style={'flex':'50%'}
-                )], style={'flex':'50%',
-                            'border': 'solid black',
-                            'border-color': 'black',
-                            'border-width': '0px 5px 5px 0px',
+                )], style={'flex':'80%',
+                            'border': 'solid white',
+                            'border-color': 'white',
+                            'border-width': '5px 5px 5px 0px',
+                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                             'padding':'20px', 'background-color':'#c8d7e3'
                             }
                             #'border-radius': '15px'}
@@ -257,10 +277,10 @@ app.layout = html.Div([
     ],
     className='bar-pie',
     style={'display':'flex',
-           'height':'80%',
-           'margin-left': '0px',
-           'margin-right': '0px',
-           #'margin-top':'20px',
+           'height':'100%',
+           'margin-top':'30px',
+           'margin-left': '35px',
+           'margin-right': '35px',
            'margin-bottom':'70px'}
     ),
 ], style={})
