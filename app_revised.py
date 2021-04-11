@@ -76,7 +76,7 @@ app.layout = html.Div([
         html.Div([
             html.P('Police brutality is the use of excessive or unnecessary force by personnel affiliated with law enforcement duties when dealing with suspects and civilians.\
                    Police violence is a leading cause of death for young men in the United States.\
-                   This dashboard studies the various causes for Police Killings',
+                   This dashboard can be used to explore the possible causes for Police Killings in the United States.',
                    style={'padding-top':'60px'}),
             html.Br(),
 
