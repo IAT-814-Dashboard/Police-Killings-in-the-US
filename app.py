@@ -322,7 +322,7 @@ def update_indicator_graph(lineChartClick, pieClick, stackBarClick, mapClick, n_
         #df = filter_by_location
         return updated_indicator_graph
 
-#update line hcart for gun purchase
+#update line chart for gun purchase
 @app.callback(
     Output('gun-line-chart', 'figure'),
     [Input('line-chart','relayoutData'),

@@ -80,12 +80,16 @@ def create_line_chart(df):
     return line_chart
 
 def create_line_chart_gun_data(df_gun):
-    gun_data_line_chart = go.Figure(data=go.Scatter(x=df_gun['date'], y=df_gun['totals'], fill='tozeroy',  mode='lines+markers', line={'color':'#AC3E31'}))
-    gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",margin=dict(t=50,l=200,b=0,r=40),
-                            xaxis_title='Year',
-                            yaxis_title='Number of Gun Purchase',
-                            font_family="Georgia",
-                            title_font_family="Georgia",font_size=22)
+    gun_data_line_chart = go.Figure(data=go.Scatter(x=df_gun['date'], y=df_gun['totals'],
+                                                    fill='tozeroy',
+                                                    mode='lines+markers',
+                                                    line={'color':'#30425e'}))
+    gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
+                                      margin=dict(t=0,l=80,b=0,r=40),
+                                      xaxis_title='Year', height=700, width=2600,
+                                      yaxis_title='Number of Gun Purchase',
+                                      font_family="Georgia",
+                                      title_font_family="Georgia",font_size=22)
     return gun_data_line_chart
 
 #Pie chart
@@ -102,7 +106,7 @@ def create_pie_chart(df):
     pie_chart.update_layout(margin=dict(t=0, b=0, l=0, r=0))
     return pie_chart
 
-def create_bar_char_for_mental_illness(df):
+def create_bar_chart_for_mental_illness(df):
     df_group_by_mental_illness = df.groupby('signs_of_mental_illness')['name'].agg('count').reset_index().rename(columns={'name':'count'})
     mental_illness_bar = px.bar(df_group_by_mental_illness, x="signs_of_mental_illness", y="count",
                             color='signs_of_mental_illness',
@@ -132,6 +136,7 @@ def create_radar_chart_for_weapons(df):
                                                         fill='toself'))
 
     radar_chart_by_weapon.update_layout(width=1400, height=900, font_size=30,
+                                        margin=dict(t=50,l=200,b=80,r=40),
                                         polar=dict(radialaxis=dict(visible=True)),
                                         showlegend=False)
     return radar_chart_by_weapon
@@ -163,7 +168,8 @@ def create_bar_chart_for_age_and_gender(df):
                         color_discrete_map={'Male':'#153a8a','Female':'#bf680b'},
                         category_orders ={'gender':['Male','Female']})
     stacked_bar.update_layout(clickmode='event+select', margin={"r":0,"t":0,"l":0,"b":0}),
-    stacked_bar.update_layout(showlegend=True,plot_bgcolor="#d1dade",margin=dict(t=50,l=200,b=0,r=40),
+    stacked_bar.update_layout(showlegend=True,plot_bgcolor="#d1dade",
+                             margin=dict(t=50,l=200,b=0,r=40),
                               xaxis_title='Age and Gender',
                               yaxis_title='Number of Killings',
                               font_family="Georgia",
@@ -223,16 +229,20 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
         ),
 
     )])
+    fig.update_traces(customdata=['Race','Age','Gender','Threat Level','Fleeing'])
 
-    fig.update_layout(plot_bgcolor="#d1dade",margin=dict(t=0,l=80,b=20,r=40),
-                            font_family="Georgia",
-                            title_font_family="Georgia",font_size=20)
+    fig.update_layout(title_text='Categories: Race,Age/Gender/Threat Level/Fleeing',
+                      width=2800, height=900,
+                      plot_bgcolor="#d1dade",
+                      margin=dict(t=50,l=100,b=20,r=100),
+                      font_family="Georgia",
+                      title_font_family="Georgia",font_size=28)
     return fig
 
 def create_sankey_diagram(df):
-    df_grouped_sankey = df.groupby(['race','age_bins','gender','signs_of_mental_illness'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
+    df_grouped_sankey = df.groupby(['race','age_bins','gender','threat_level','flee'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
     sankey_diagram = generateSankey(df_grouped_sankey,
-                               ['race','age_bins','gender','signs_of_mental_illness'],
+                               ['race','age_bins','gender','threat_level','flee'],
                                value_cols='count',
                                )
 
