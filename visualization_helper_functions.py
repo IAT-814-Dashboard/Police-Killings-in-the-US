@@ -26,31 +26,27 @@ def get_age_and_gender(stackBarClick):
     return gender, age
 
 def indicator_graph(number):
-    indicator_figure = go.Figure(go.Indicator(
-    mode = "number",
-    value = number,
-    number = {'prefix': ""},
-    visible=True))
+    indicator_figure = go.Figure(go.Indicator(mode = "number",
+                                              value = number,
+                                              number = {'prefix': ""},
+                                              visible=True))
     indicator_figure.update_traces(gauge={'bordercolor':'black', 'borderwidth':10,
                                           'bar':{'color':'#0091D5'},
                                           'axis':{'range':[0,6571],
                                           'tickmode':'auto'}})
-    indicator_figure.update_layout(font={'size':5,'color':'black'})
+    indicator_figure.update_layout(font={'size':10,'color':'black'},
+                                    width=500,height=300,
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    plot_bgcolor='rgba(0,0,0,0)')
     return indicator_figure
-
-def top_5_by_race(df):
-    df_group_by_race = df.groupby('race')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-    top_5_by_race_bar = px.bar(df_group_by_race, x="race", y="count", title="Top 5 By Race", color='race')
-    top_5_by_race_bar.update_layout(clickmode='event+select',
-                              margin={"r":0,"t":0,"l":0,"b":0})
-    return top_5_by_race_bar
 
 #Choropleth map
 def create_choropleth_map(df):
     df_group_by_state = df.groupby('state')['name'].agg('count').reset_index().rename(columns={'name':'count'})
     choropleth_map = go.Figure(data=go.Choropleth(
-        locations=df_group_by_state['state'],
+        locations = df_group_by_state['state'],
         z = df_group_by_state['count'],
+        #text = df_group_by_state['text'],
         locationmode = 'USA-states',
         colorscale = 'Greens',
         colorbar_title = "Number of Deaths"
@@ -60,11 +56,18 @@ def create_choropleth_map(df):
         width=1700, height=700,
         geo_scope='usa',
         clickmode='event+select',
-        margin={"r":0,"t":0,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        hoverlabel = dict(font=dict(size=25)),
     )
-    choropleth_map.update_layout(plot_bgcolor="#d1dade",margin=dict(t=0,l=80,b=0,r=40),
-                            font_family="Georgia",
-                            title_font_family="Georgia",font_size=25, dragmode=False)
+    choropleth_map.update_layout(plot_bgcolor="#d1dade",
+                                margin=dict(t=0,l=80,b=0,r=40),
+                                font_family="Georgia",
+                                title_font_family="Georgia",
+                                font_size=25,
+                                dragmode=False,
+                                #paper_bgcolor='rgba(0,0,0,0)',
+                                #plot_bgcolor='rgba(0,0,0,0)'
+                                )
     return choropleth_map
 
 def create_line_chart(df):
@@ -72,11 +75,17 @@ def create_line_chart(df):
     line_chart = go.Figure(data=go.Scatter(x=df_group_by_date['date'], y=df_group_by_date['count'],
                             mode='lines+markers', fill='tozeroy',
                             line={'color':'#30425e'}))
-    line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",margin=dict(t=0,l=80,b=0,r=40),
+    line_chart.update_xaxes(showspikes=True, spikecolor="green", spikesnap="cursor", spikemode="across")
+    line_chart.update_yaxes(showspikes=True, spikecolor="orange", spikethickness=2)
+    line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
+                            #paper_bgcolor='rgba(0,0,0,0)',
+                            #plot_bgcolor='rgba(0,0,0,0)',
+                            margin=dict(t=0,l=80,b=0,r=40),
                             xaxis_title='Year', height=700, width=2600,
                             yaxis_title='Number of Killings',
                             font_family="Georgia",
-                            title_font_family="Georgia",font_size=25)
+                            title_font_family="Georgia",font_size=25,
+                            hovermode='x unified')
     return line_chart
 
 def create_line_chart_gun_data(df_gun):
@@ -85,26 +94,14 @@ def create_line_chart_gun_data(df_gun):
                                                     mode='lines+markers',
                                                     line={'color':'#30425e'}))
     gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
+                                      #paper_bgcolor='rgba(0,0,0,0)',
+                                      #plot_bgcolor='rgba(0,0,0,0)',
                                       margin=dict(t=0,l=80,b=0,r=40),
                                       xaxis_title='Year', height=700, width=2600,
                                       yaxis_title='Number of Gun Purchase',
-                                      font_family="Georgia",
+                                      font_family="Georgia", hovermode='x unified',
                                       title_font_family="Georgia",font_size=22)
     return gun_data_line_chart
-
-#Pie chart
-def create_pie_chart(df):
-    df_group_by_race = df.groupby('race')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-    pie_chart = go.Figure(data=[go.Pie(labels=df_group_by_race['race'], values=df_group_by_race['count'],
-                         textinfo='label+percent', insidetextorientation='radial'
-                         )])
-    colors = ['gold', 'mediumturquoise', 'darkorange', 'lightgreen']
-    pie_chart.update_traces(marker=dict(colors=colors))
-    pie_chart.update_layout(showlegend=False, plot_bgcolor="#d1dade",margin=dict(t=0,l=0,b=0,r=40),
-                            font_family="Georgia",
-                            title_font_family="Georgia",font_size=22)
-    pie_chart.update_layout(margin=dict(t=0, b=0, l=0, r=0))
-    return pie_chart
 
 def create_bar_chart_for_mental_illness(df):
     df_group_by_mental_illness = df.groupby('signs_of_mental_illness')['name'].agg('count').reset_index().rename(columns={'name':'count'})
@@ -116,6 +113,8 @@ def create_bar_chart_for_mental_illness(df):
                             orientation='v'
                             )
     mental_illness_bar.update_layout(clickmode='event+select',
+                                 #paper_bgcolor='rgba(0,0,0,0)',
+                                 #plot_bgcolor='rgba(0,0,0,0)',
                                  plot_bgcolor="#d1dade",
                                  margin=dict(t=50,l=200,b=80,r=40),
                                  xaxis_title='Signs of Mental Illness',
@@ -123,6 +122,7 @@ def create_bar_chart_for_mental_illness(df):
                                  font_family="Georgia",
                                  title_font_family="Georgia",
                                  font_size=25,
+                                 hovermode='x unified',
                                  xaxis_tickangle=-45)
 
     return mental_illness_bar
@@ -136,7 +136,9 @@ def create_radar_chart_for_weapons(df):
                                                         fill='toself'))
 
     radar_chart_by_weapon.update_layout(width=1400, height=900, font_size=30,
-                                        margin=dict(t=50,l=200,b=80,r=40),
+                                        #paper_bgcolor='rgba(0,0,0,0)',
+                                        #plot_bgcolor='rgba(0,0,0,0)',
+                                        margin=dict(t=50,l=200,b=80,r=40), hovermode='x unified',
                                         polar=dict(radialaxis=dict(visible=True)),
                                         showlegend=False)
     return radar_chart_by_weapon
@@ -150,9 +152,11 @@ def create_bar_char_for_race(df):
                         category_orders ={'gender':['Male','Female']})
     race_bar_chart.update_layout(clickmode='event+select',)
     race_bar_chart.update_layout(showlegend=True, plot_bgcolor="#d1dade",
-                            margin=dict(t=50,l=200,b=80,r=40), hovermode='closest',
+                            #paper_bgcolor='rgba(0,0,0,0)',
+                            #plot_bgcolor='rgba(0,0,0,0)',
+                            margin=dict(t=50,l=200,b=80,r=40),
                             xaxis={'categoryorder':'total descending'},
-                            xaxis_title='Race',
+                            xaxis_title='Race', hovermode='x unified',
                             yaxis_title='Number of Killings',
                             font_family="Georgia",
                             title_font_family="Georgia",font_size=25, xaxis_tickangle=-45)
@@ -169,10 +173,13 @@ def create_bar_chart_for_age_and_gender(df):
                         category_orders ={'gender':['Male','Female']})
     stacked_bar.update_layout(clickmode='event+select', margin={"r":0,"t":0,"l":0,"b":0}),
     stacked_bar.update_layout(showlegend=True,plot_bgcolor="#d1dade",
-                             margin=dict(t=50,l=200,b=0,r=40),
+                              #paper_bgcolor='rgba(0,0,0,0)',
+                              #plot_bgcolor='rgba(0,0,0,0)',
+                              margin=dict(t=50,l=200,b=0,r=40),
                               xaxis_title='Age and Gender',
                               yaxis_title='Number of Killings',
                               font_family="Georgia",
+                              hoverlabel = dict(font=dict(size=40)),
                               title_font_family="Georgia",font_size=25,
                               xaxis_tickangle=-45)
     return stacked_bar
@@ -216,7 +223,7 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
           pad = 15,
           thickness = 20,
           line = dict(
-            color = "black",
+            color = "green",
             width = 0.5
           ),
           label = labelList,
@@ -231,10 +238,17 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
     )])
     fig.update_traces(customdata=['Race','Age','Gender','Threat Level','Fleeing'])
 
-    fig.update_layout(title_text='Categories: Race,Age/Gender/Threat Level/Fleeing',
+    fig.update_layout(title_text='Race\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Age \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Gender\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Threat Level\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Fleeing',
                       width=2800, height=900,
                       plot_bgcolor="#d1dade",
-                      margin=dict(t=50,l=100,b=20,r=100),
+                      hoverlabel = dict(font=dict(size=40)),
+                      margin=dict(t=70,l=100,b=20,r=100),
+                      #paper_bgcolor='rgba(0,0,0,0)',
+                      #plot_bgcolor='rgba(0,0,0,0)',
                       font_family="Georgia",
                       title_font_family="Georgia",font_size=28)
     return fig
