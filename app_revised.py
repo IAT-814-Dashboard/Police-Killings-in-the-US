@@ -27,7 +27,7 @@ app.layout = html.Div([
                     style = {'textAlign' : 'center',
                              'color': 'white',
                              'font-family': 'Georgia',
-                             'font-size': '70px',
+                             'font-size': '50px',
                              'font-weight': 'bold',
                              'letter-spacing': '-1px',
                              'line-height': '1' }
@@ -79,6 +79,7 @@ app.layout = html.Div([
                    This dashboard can be used to explore the possible causes for Police Killings in the United States.',
                    style={'padding-top':'60px'}),
             html.Br(),
+            #html.P('There has been 900 fatal police shooting every year since 2005')
 
             html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
         ], style={'float':'left','flex':'25%',
@@ -95,15 +96,32 @@ app.layout = html.Div([
 
 
         html.Div([
-            html.H1(children='Total Number of Police Killings'),
+            html.H3(children='Total Number of Police Killings',
+                    style={
+                            'textAlign':'center',
+                            'color': 'black',
+                            'font-family': 'Georgia',
+                            'font-size': '38px',
+                            'margin-top':'50px',
+                            'margin-bottom':'10px',
+                            'font-weight': 'bold',
+                            'line-height': '1',
+                            }),
             html.Div(dcc.Loading(
                         dcc.Graph(
                                 id="indicator-graph",
                                 figure=indicator_graph(len(df)),
                                 )),
-                    style={'border': 'solid white',
-                    'border-color': 'white',
-                    'border_radius':'50%'}),
+                    style={'margin-left':'170px',
+                            }
+                        #'margin-top':'40px'}
+                    #style={'border': 'solid white',
+                    #'border-color': 'white',
+                    #'border_radius':'50%'}
+                    ),
+            html.Img(src='assets/gun_logo.png',width='50%', height='20%',
+                    #style={'margin-top':'50px'}
+                    ),
             html.Button('RESET ALL',id='reset_button', n_clicks=0,
                         style={'background-color': '#DADADA',
                                 'border':'none',
@@ -112,7 +130,7 @@ app.layout = html.Div([
                                 'display':'inline-block',
                                 'width':'80%',
                                 'height':'120px',
-                                'margin-top':'70px',
+                                'margin-top':'30px',
                                 'text-align': 'center',
                                 'text-decoration': 'none',
                                 'display': 'inline-block',
@@ -321,7 +339,6 @@ style={'display':'flex',
                 dcc.Graph(
                         id='sankey-diagram',
                         figure=create_sankey_diagram(df),
-                        config={'editable':True},
                         style={'margin-left':'50px', 'margin-right':'50px'}
 
                 )], style={'flex':'80%',
@@ -339,7 +356,8 @@ style={'display':'flex',
            'height':'100%',
            'margin-top':'30px',
            'margin-left': '35px',
-           'margin-right': '35px',}
+           'margin-right': '35px',
+           'margin-bottom':'70px'}
     ),
 
 
@@ -382,6 +400,8 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
         return dash.no_update
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
@@ -532,6 +552,8 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
         return dash.no_update
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
@@ -680,6 +702,8 @@ def update_line_chart(mapClick, raceBarChartClick, ageBarClick, mentalBarClick, 
     if viz_states['line_chart']==1:
         return dash.no_update
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
@@ -819,6 +843,8 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
         return dash.no_update
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
@@ -970,6 +996,8 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
         return dash.no_update
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
@@ -1119,6 +1147,8 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
         return dash.no_update
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
@@ -1337,6 +1367,8 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
         return create_sankey_diagram(df)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element == 'gun-line-chart':
+        if viz_states['gun_chart']==1:
+            return dash.no_update
         startDate = gunClick['xaxis.range[0]']
         endDate = gunClick['xaxis.range[1]']
         filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
