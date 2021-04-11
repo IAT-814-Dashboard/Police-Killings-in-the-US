@@ -79,8 +79,8 @@ app.layout = html.Div([
                    This dashboard studies the various causes for Police Killings',
                    style={'padding-top':'60px'}),
             html.Br(),
-            html.Br(),
-            html.P(html.Strong(html.Center('ALL LIVES MATTER!')))
+
+            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
         ], style={'float':'left','flex':'25%',
                  'text-align':'center',
                  'background-color':'#c8d7e3',
@@ -395,6 +395,7 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
             filter_by_date = intermediateBarChartRace[(intermediateBarChartRace['date']>=startDate) & (intermediateBarChartRace['date']<=endDate)]
             choropleth_map = create_choropleth_map(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return choropleth_map
         elif viz_states['bar_chart_age']==1:
             intermediateBarChartAge = pd.read_json(intermediateBarChartAge)
@@ -403,6 +404,7 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
             filter_by_date = intermediateBarChartAge[(intermediateBarChartAge['date']>=startDate) & (intermediateBarChartAge['date']<=endDate)]
             choropleth_map = create_choropleth_map(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return choropleth_map
         elif viz_states['bar_chart_mental']==1:
             intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
@@ -411,6 +413,7 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
             filter_by_date = intermediateBarChartMental[(intermediateBarChartMental['date']>=startDate) & (intermediateBarChartMental['date']<=endDate)]
             choropleth_map = create_choropleth_map(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return choropleth_map
         else:
             startDate = lineChartClick['xaxis.range[0]']
@@ -418,6 +421,7 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
             filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
             choropleth_map = create_choropleth_map(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return choropleth_map
     if triggered_element =='bar-chart-race':
         if viz_states['line_chart']==1:
@@ -542,6 +546,7 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
             filter_by_date = intermediateChoroplethData[(intermediateChoroplethData['date']>=startDate) & (intermediateChoroplethData['date']<=endDate)]
             bar_chart_race = create_bar_char_for_race(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_race
         elif viz_states['bar_chart_age']==1:
             intermediateBarChartAge = pd.read_json(intermediateBarChartAge)
@@ -550,6 +555,7 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
             filter_by_date = intermediateBarChartAge[(intermediateBarChartAge['date']>=startDate) & (intermediateBarChartAge['date']<=endDate)]
             bar_chart_race = create_bar_char_for_race(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_race
         elif viz_states['bar_chart_mental']==1:
             intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
@@ -558,6 +564,7 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
             filter_by_date = intermediateBarChartMental[(intermediateBarChartMental['date']>=startDate) & (intermediateBarChartMental['date']<=endDate)]
             bar_chart_race = create_bar_char_for_race(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_race
         else:
             startDate = lineChartClick['xaxis.range[0]']
@@ -565,6 +572,7 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
             filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
             bar_chart_race = create_bar_char_for_race(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_race
 
     if triggered_element=='choropleth-map':
@@ -878,6 +886,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = intermediateChoroplethMap[(intermediateChoroplethMap['date']>=startDate) & (intermediateChoroplethMap['date']<=endDate)]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
         elif viz_states['bar_chart_race']==1:
             intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
@@ -886,6 +895,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = intermediateBarChartRace[(intermediateBarChartRace['date']>=startDate) & (intermediateBarChartRace['date']<=endDate)]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
         elif viz_states['bar_chart_mental']==1:
             intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
@@ -894,6 +904,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = intermediateBarChartMental[(intermediateBarChartMental['date']>=startDate) & (intermediateBarChartMental['date']<=endDate)]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
         else:
             startDate = lineChartClick['xaxis.range[0]']
@@ -901,6 +912,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
 
     if triggered_element == 'mental-illness-bar':
@@ -910,6 +922,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_mental_illness = intermediateBarChartRace[intermediateBarChartRace['signs_of_mental_illness']==mental_illness_value]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_mental_illness)
             viz_states['bar_chart_mental'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
         elif viz_states['choropleth_map']==1:
             intermediateChoroplethMap = pd.read_json(intermediateChoroplethMap)
@@ -917,6 +930,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_mental_illness = intermediateChoroplethMap[intermediateChoroplethMap['signs_of_mental_illness']==mental_illness_value]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_mental_illness)
             viz_states['bar_chart_mental'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
         elif viz_states['line_chart']==1:
             intermediateLineYearData = pd.read_json(intermediateLineYearData)
@@ -924,12 +938,14 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
             filter_by_mental_illness = intermediateLineYearData[intermediateLineYearData['signs_of_mental_illness']==mental_illness_value]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_mental_illness)
             viz_states['bar_chart_mental'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
         else:
             mental_illness_value = mentalBarClick['points'][0]['x']
             filter_by_mental_illness = df[df['signs_of_mental_illness']==mental_illness_value]
             bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_mental_illness)
             viz_states['bar_chart_mental'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_age
 
 #update mental illness bar chart
@@ -1021,6 +1037,7 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = intermediateChoroplethMap[(intermediateChoroplethMap['date']>=startDate) & (intermediateChoroplethMap['date']<=endDate)]
             bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_mental_illness
         elif viz_states['bar_chart_race']==1:
             intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
@@ -1029,6 +1046,7 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = intermediateBarChartRace[(intermediateBarChartRace['date']>=startDate) & (intermediateBarChartRace['date']<=endDate)]
             bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_mental_illness
         elif viz_states['bar_chart_mental']==1:
             intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
@@ -1037,6 +1055,7 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = intermediateBarChartMental[(intermediateBarChartMental['date']>=startDate) & (intermediateBarChartMental['date']<=endDate)]
             bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_mental_illness
         else:
             startDate = lineChartClick['xaxis.range[0]']
@@ -1044,6 +1063,7 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
             filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
             bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return bar_chart_by_mental_illness
 
     if triggered_element == 'bar-chart-age':
@@ -1179,6 +1199,7 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
             filter_by_date = intermediateChoroplethMap[(intermediateChoroplethMap['date']>=startDate) & (intermediateChoroplethMap['date']<=endDate)]
             radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return radar_chart_for_weapons
         elif viz_states['bar_chart_race']==1:
             intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
@@ -1187,6 +1208,7 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
             filter_by_date = intermediateBarChartRace[(intermediateBarChartRace['date']>=startDate) & (intermediateBarChartRace['date']<=endDate)]
             radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return radar_chart_for_weapons
         elif viz_states['bar_chart_mental']==1:
             intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
@@ -1195,6 +1217,7 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
             filter_by_date = intermediateBarChartMental[(intermediateBarChartMental['date']>=startDate) & (intermediateBarChartMental['date']<=endDate)]
             radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return radar_chart_for_weapons
         elif viz_states['bar_chart_age']==1:
             intermediateBarChartAge = pd.read_json(intermediateBarChartAge)
@@ -1203,6 +1226,7 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
             filter_by_date = intermediateBarChartAge[(intermediateBarChartAge['date']>=startDate) & (intermediateBarChartAge['date']<=endDate)]
             radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return radar_chart_for_weapons
         else:
             startDate = lineChartClick['xaxis.range[0]']
@@ -1210,6 +1234,7 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
             filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
             radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return radar_chart_for_weapons
 
     if triggered_element == 'bar-chart-age':
@@ -1412,6 +1437,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
             filter_by_date = intermediate_df[(intermediate_df['date']>=startDate) & (intermediate_df['date']<=endDate)]
             sankey_diagram = create_sankey_diagram(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return sankey_diagram
         if viz_states['bar_chart_race']==1:
             intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
@@ -1420,6 +1446,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
             filter_by_date = intermediateBarChartRace[(intermediateBarChartRace['date']>=startDate) & (intermediateBarChartRace['date']<=endDate)]
             sankey_diagram = create_sankey_diagram(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return sankey_diagram
         if viz_states['bar_chart_age']==1:
             intermediateBarChartAge = pd.read_json(intermediateBarChartAge)
@@ -1428,6 +1455,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
             filter_by_date = intermediateBarChartAge[(intermediateBarChartAge['date']>=startDate) & (intermediateBarChartAge['date']<=endDate)]
             sankey_diagram = create_sankey_diagram(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return sankey_diagram
         if viz_states['bar_chart_mental']==1:
             intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
@@ -1436,6 +1464,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
             filter_by_date = intermediateBarChartMental[(intermediateBarChartMental['date']>=startDate) & (intermediateBarChartMental['date']<=endDate)]
             sankey_diagram = create_sankey_diagram(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return sankey_diagram
         else:
             startDate = lineChartClick['xaxis.range[0]']
@@ -1443,6 +1472,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
             filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
             sankey_diagram = create_sankey_diagram(filter_by_date)
             viz_states['line_chart'] = 1
+            viz_states['gun_chart'] = 1
             return sankey_diagram
 
     elif triggered_element == 'choropleth-map':
