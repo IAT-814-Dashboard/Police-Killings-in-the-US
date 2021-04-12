@@ -97,7 +97,7 @@ def create_bar_chart_for_mental_illness(df):
                             hover_data=['count'],
                             width=1400,
                             height=800,
-                            orientation='v'
+                            #orientation='v'
                             )
     mental_illness_bar.update_layout(clickmode='event+select',
                                  paper_bgcolor='rgba(0,0,0,0)',
