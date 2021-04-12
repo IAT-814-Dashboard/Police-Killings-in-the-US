@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from datetime import date
 
 import dash
 import dash_core_components as dcc
@@ -48,6 +49,17 @@ app.layout = html.Div([
                 'margin-right': '35px',}
     ),
 
+    html.Div([
+                dcc.DatePickerRange(id='my-date-picker-range',
+                                    min_date_allowed=date(2015, 1, 1),
+                                    max_date_allowed=date(2021, 3, 31),
+                                    initial_visible_month=date(2017, 1, 1),
+                                    end_date=date(2019, 1, 1),
+                                    style={'width':'600px','height':'200px',
+                                            'font-size':'30px'}
+                                    ),
+                html.Div(id='slider-output-container')
+    ],style={'margin-left':'100px',}),
 #line chart per year+information box+indicator graph
     html.Div([
         html.Div([
@@ -73,26 +85,7 @@ app.layout = html.Div([
                             'padding':'20px', 'background-color':'#c8d7e3'}
                 , className='line-chart-block'),
 
-        html.Div([
-            html.P('Police brutality is the use of excessive or unnecessary force by personnel affiliated with law enforcement duties when dealing with suspects and civilians.\
-                   Police violence is a leading cause of death for young men in the United States.\
-                   This dashboard can be used to explore the possible causes for Police Killings in the United States.',
-                   style={'padding-top':'60px'}),
-            html.Br(),
-            #html.P('There has been 900 fatal police shooting every year since 2005')
 
-            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
-        ], style={'float':'left','flex':'25%',
-                 'text-align':'center',
-                 'background-color':'#c8d7e3',
-                 'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                  'font-family': 'Georgia',
-                  'font-size': '40px',
-                  'padding':'20px',
-                  'border': 'solid white',
-                  'border-color': 'white',
-                  'border-width': '5px 5px 5px 5px',
-                  }),
 
 
         html.Div([
@@ -112,16 +105,9 @@ app.layout = html.Div([
                                 id="indicator-graph",
                                 figure=indicator_graph(len(df)),
                                 )),
-                    style={'margin-left':'170px',
-                            }
-                        #'margin-top':'40px'}
-                    #style={'border': 'solid white',
-                    #'border-color': 'white',
-                    #'border_radius':'50%'}
+                    style={'margin-left':'170px',}
                     ),
-            html.Img(src='assets/gun_logo.png',width='50%', height='20%',
-                    #style={'margin-top':'50px'}
-                    ),
+            html.Img(src='assets/gun_logo.png',width='50%', height='20%',),
             html.Button('RESET ALL',id='reset_button', n_clicks=0,
                         style={'background-color': '#DADADA',
                                 'border':'none',
@@ -143,7 +129,28 @@ app.layout = html.Div([
                     'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                     'border-color': 'white',
                     'border-width': ' 5px 5px 5px 5px',
-                    'padding':'20px'})
+                    'padding':'20px'}),
+
+        html.Div([
+            html.P('Police brutality is the use of excessive or unnecessary force by personnel affiliated with law enforcement duties when dealing with suspects and civilians.\
+                   Police violence is a leading cause of death for young men in the United States.\
+                   This dashboard can be used to explore the possible causes for Police Killings in the United States.',
+                   style={'padding-top':'60px'}),
+            html.Br(),
+            #html.P('There has been 900 fatal police shooting every year since 2005')
+
+            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
+        ], style={'float':'left','flex':'25%',
+                 'text-align':'center',
+                 'background-color':'#c8d7e3',
+                 'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                  'font-family': 'Georgia',
+                  'font-size': '40px',
+                  'padding':'20px',
+                  'border': 'solid white',
+                  'border-color': 'white',
+                  'border-width': '5px 5px 5px 5px',
+                  }),
     ],
     className='information-bar',
     style={'display':'flex',
@@ -153,6 +160,7 @@ app.layout = html.Div([
            'margin-right': '35px',
            }
     ),
+
 
 
 #gun purchase per year+ choropleth map
@@ -359,10 +367,7 @@ style={'display':'flex',
            'margin-right': '35px',
            'margin-bottom':'70px'}
     ),
-
-
-
-
+#intermediate values
     html.Div(id='intermediate-value-line-chart-year', style={'display': 'none'}),
     html.Div(id='intermediate-value-bar-chart-race', style={'display': 'none'}),
     html.Div(id='intermediate-value-choropleth-map', style={'display': 'none'}),
@@ -376,6 +381,7 @@ style={'display':'flex',
 ], style={})
 
 #-----------------------------------------------------------------------------------------------------------------------------------
+
 
 
 #update choropleth map
@@ -1418,7 +1424,35 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
             return sankey_diagram
 
     elif triggered_element =='bar-chart-age':
-        if viz_states['bar_chart_race']==1:
+        if viz_states['bar_chart_race']==1 and viz_states['bar_chart_mental']==1:
+            intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
+            intermediateBarChartMental = pd.read_json(intermediateBarChartMental)
+            if len(intermediateBarChartRace)>len(intermediateBarChartMental):
+                race = intermediateBarChartRace['race'].unique()[0]
+                intermediate_df = intermediateBarChartMental[intermediateBarChartMental['race']==race]
+            else:
+                mental_illness_value = mentalBarClick['points'][0]['x']
+                intermediate_df = intermediateBarChartRace[intermediateBarChartRace['signs_of_mental_illness']==mental_illness_value]
+            gender, age= get_age_and_gender(ageBarClick)
+            filter_by_age_gender = intermediate_df[(intermediate_df['gender']==gender) & (intermediate_df['age_bins']==age)]
+            sankey_diagram = create_sankey_diagram(filter_by_age_gender)
+            viz_states['bar_chart_age'] = 1
+            return sankey_diagram
+        if viz_states['bar_chart_race']==1 and viz_states['choropleth-map']==1:
+            intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
+            intermediateChoroplethMap = pd.read_json(intermediateChoroplethMap)
+            if len(intermediateBarChartRace)>len(intermediateChoroplethMap):
+                race = intermediateBarChartRace['race'].unique()[0]
+                intermediate_df = intermediateChoroplethMap[intermediateChoroplethMap['race']==race]
+            else:
+                state = mapClick['points'][0]['location']]
+                intermediate_df = intermediateBarChartRace[intermediateBarChartRace['state']==state]
+            gender, age= get_age_and_gender(ageBarClick)
+            filter_by_age_gender = intermediate_df[(intermediate_df['gender']==gender) & (intermediate_df['age_bins']==age)]
+            sankey_diagram = create_sankey_diagram(filter_by_age_gender)
+            viz_states['bar_chart_age'] = 1
+            return sankey_diagram
+        elif viz_states['bar_chart_race']==1:
             intermediateBarChartRace = pd.read_json(intermediateBarChartRace)
             gender, age= get_age_and_gender(ageBarClick)
             filter_by_age_gender = intermediateBarChartRace[(intermediateBarChartRace['gender']==gender) & (intermediateBarChartRace['age_bins']==age)]
@@ -1612,6 +1646,49 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
         viz_states['gun_chart'] = 1
         return gun_data_line_chart
 
+#update indicator graph
+@app.callback(
+    Output('indicator-graph','figure'),
+    [Input('line-chart','relayoutData'),
+     Input('bar-chart-race', 'clickData'),
+     Input('bar-chart-age', 'clickData'),
+     Input('choropleth-map','clickData'),
+     Input('mental-illness-bar', 'clickData'),
+     Input('reset_button','n_clicks')], prevent_initial_call=True)
+def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mentalBarClick, n_clicks):
+
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
+        return indicator_graph(len(df))
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='line-chart':
+        startDate = lineChartClick['xaxis.range[0]']
+        endDate = lineChartClick['xaxis.range[1]']
+        filter_by_date = df[(df['date']>=startDate) & (df['date']<=endDate)]
+        updated_indicator_graph = indicator_graph(len(filter_by_date))
+        return updated_indicator_graph
+    elif triggered_element =='bar-chart-race':
+        race = raceBarChartClick['points'][0]['x']
+        filter_by_race = df[df['race']==race]
+        updated_indicator_graph = indicator_graph(len(filter_by_race))
+        return updated_indicator_graph
+    elif triggered_element =='bar-chart-age':
+        gender, age = get_age_and_gender(ageBarClick)
+        filter_by_age_gender = df[(df['gender']==gender) & (df['age_bins']==age)]
+        updated_indicator_graph = indicator_graph(len(filter_by_age_gender))
+        return updated_indicator_graph
+    elif triggered_element == 'choropleth-map':
+        filter_by_location = df[df['state']==mapClick['points'][0]['location']]
+        updated_indicator_graph = indicator_graph(len(filter_by_location))
+        return updated_indicator_graph
+    elif triggered_element == 'mental-illness-bar':
+        mental_illness_value = mentalBarClick['points'][0]['x']
+        filter_by_mental_illness = df[df['signs_of_mental_illness']==mental_illness_value]
+        updated_indicator_graph = indicator_graph(len(filter_by_mental_illness))
+        return updated_indicator_graph
+
+
+
 #-----------------------------------------------------------------------------------------------------------------------------------
 #intermediate data update callbacks
 @app.callback(
@@ -1662,7 +1739,6 @@ def update_df_bar_chart_age(ageBarClick, n_clicks):
     filter_by_age_gender = df[(df['gender']==gender) & (df['age_bins']==age)]
     return filter_by_age_gender.to_json()
 
-
 @app.callback(
     Output('intermediate-value-bar-chart-mental','children'),
     [Input('mental-illness-bar','clickData'),
@@ -1673,16 +1749,6 @@ def update_df_bar_chart_mental_illness(mentalBarClick, n_clicks):
         return None
     mental_illness_value = mentalBarClick['points'][0]['x']
     filter_by_mental_illness = df[df['signs_of_mental_illness']==mental_illness_value]
-    return filter_by_mental_illness.to_json()
-
-@app.callback(
-    Output('intermediate-value-radar-chart-weapons','children'),
-    [Input('radar-chart-weapons','relayoutData'),
-    Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_df_radar_chart_weapons(radarClick, n_clicks):
-    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
-    if changed_id=='reset_button':
-        return None
     return filter_by_mental_illness.to_json()
 
 @app.callback(
