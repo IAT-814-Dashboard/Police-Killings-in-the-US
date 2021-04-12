@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import date
+from datetime import datetime,date
 
 import dash
 import dash_core_components as dcc
@@ -13,8 +13,6 @@ import dash_bootstrap_components as dbc
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 df = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
-df_reset = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
-df_previous = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
 gun_data = pd.read_csv('data/gun-data-by-year.csv')
 
 viz_states = {'bar_chart_race':0, 'choropleth_map':0, 'line_chart':0, 'bar_chart_age':0, 'bar_chart_mental':0, 'radar_chart_weapons':0, 'gun_chart':0}
@@ -238,6 +236,7 @@ html.Div([
             dcc.Graph(
                     id='bar-chart-race',
                     figure=create_bar_char_for_race(df),
+                    config={'doubleClick':'reset'},
                     #config={#'responsive': True,
                     #            'doubleClick':'reset'},
             )], style={'flex':'34%',
@@ -385,14 +384,59 @@ style={'display':'flex',
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
+def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick):
+    startDate=gunStartDate="01/01/2015"
+    endDate=gunEndDate="01/01/2021"
+    state = df['state'].unique()
+    race = df['race'].unique()
+    gender = df['gender'].unique()
+    age = df['age_bins'].unique()
+    mental_illness_value = df['signs_of_mental_illness'].unique()
+    if lineChartClick is not None:
+        startDate = lineChartClick['xaxis.range[0]']
+        endDate = lineChartClick['xaxis.range[1]']
+    if gunClick is not None:
+        gunStartDate = gunClick['xaxis.range[0]']
+        gunEndDate = gunClick['xaxis.range[1]']
+    if mapClick is not None:
+        state = [mapClick['points'][0]['location']]
+    if raceBarChartClick is not None:
+        race = [raceBarChartClick['points'][0]['x']]
+    if ageBarClick is not None:
+        gender, age= get_age_and_gender(ageBarClick)
+        gender = [gender]
+        age = [age]
+    if mentalBarClick is not None:
+        mental_illness_value = [mentalBarClick['points'][0]['x']]
+    return startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value
+
+def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value):
+    filtered_df = pd.DataFrame(
+    df[['name','state', 'race','date','signs_of_mental_illness','age_bins','gender','threat_level','flee','armed']][
+                         (df['date']>=startDate) &
+                         (df['date']<=endDate) &
+                         (df['state'].isin(state)) &
+                         (df['race'].isin(race)) &
+                         (df['gender'].isin(gender)) &
+                         (df['age_bins'].isin(age)) &
+                         (df['signs_of_mental_illness'].isin(mental_illness_value)) &
+                         (df['race'].isin(race))
+                         ]).reset_index()
+    return filtered_df
+
+
 @app.callback(
     Output('reset-viz-states','children'),
-    Input('reset_button','n_clicks'), prevent_initial_call=True)
-def update_viz_states(n_clicks):
-    global df, df_reset
+    [Input('reset_button','n_clicks'),
+     Input('line-chart','relayoutData'),
+     Input('gun-line-chart', 'relayoutData'),
+     Input('choropleth-map', 'clickData'),
+     Input('bar-chart-race', 'clickData'),
+     Input('bar-chart-age', 'clickData'),
+     Input('mental-illness-bar', 'clickData')],prevent_initial_call=True)
+def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        df = df_reset
         viz_states['bar_chart_race'] = 0
         viz_states['choropleth_map'] = 0
         viz_states['line_chart'] = 0
@@ -401,29 +445,21 @@ def update_viz_states(n_clicks):
         viz_states['radar_chart_weapons']=0
         viz_states['gun_chart'] = 0
         return 0
-
-@app.callback(
-    Output('triggered_element','children'),
-    [Input('bar-chart-race', 'clickData'),
-    Input('bar-chart-age', 'clickData'),
-    Input('line-chart','relayoutData'),
-    Input('mental-illness-bar', 'clickData'),
-    Input('gun-line-chart', 'relayoutData'),
-    Input('reset_button','n_clicks')], prevent_initial_call=True)
-def get_previous_triggered_element(n_clicks):
-    global df, df_reset
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        return 'gun-line-chart'
-    elif triggered_element == 'line-chart':
-        return 'line-chart'
-    elif triggered_element == 'bar-chart-race':
-        return 'bar-chart-race'
-    elif triggered_element == 'bar-chart-age':
-        return 'bar-chart-age'
-    elif triggered_element == 'mental-illness-bar':
-        return 'mental-illness-bar'
+    if triggered_element=='line-chart':
+        viz_states['line_chart'] = 1
+    if triggered_element=='gun-line-chart':
+        viz_states['gun_chart'] = 1
+    if triggered_element=='choropleth-map':
+        viz_states['choropleth_map'] = 1
+    if triggered_element=='bar-chart-race':
+        viz_states['bar_chart_race'] = 1
+    if triggered_element=='bar-chart-age':
+        viz_states['bar_chart_age'] = 1
+    if triggered_element=='mental-illness-bar':
+        viz_states['bar_chart_mental'] = 1
+    return 0
+
 
 #update choropleth map
 @app.callback(
@@ -439,58 +475,19 @@ def get_previous_triggered_element(n_clicks):
     Input('intermediate-value-bar-chart-age','children'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mentalBarClick, gunClick, intermediateBarChartMental, intermediateLineYearData, intermediateBarChartRace, intermediateBarChartAge, n_clicks):
-    global df, df_reset
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['choropleth_map']==0
-        df = df_reset
+        viz_states['choropleth_map']=0
         return create_choropleth_map(df)
     if viz_states['choropleth_map']==1:
         return dash.no_update
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        choropleth_map = create_choropleth_map(filter_by_date)
-        return choropleth_map
-    if triggered_element =='line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        choropleth_map = create_choropleth_map(filter_by_date)
-        viz_states['line_chart'] = 1
-        viz_states['gun_chart'] = 1
-        return choropleth_map
-    if triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df =filter_by_race
-        choropleth_map = create_choropleth_map(filter_by_race)
-        viz_states['bar_chart_race'] = 1
-        return choropleth_map
-    if triggered_element == "bar-chart-age":
-        gender, age= get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        df =filter_by_age_gender
-        choropleth_map = create_choropleth_map(filter_by_age_gender)
-        viz_states['bar_chart_age'] = 1
-        return choropleth_map
 
-    if triggered_element == 'mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        choropleth_map = create_choropleth_map(filter_by_mental_illness)
-        viz_states['bar_chart_mental'] = 1
-        return choropleth_map
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                get_viz_info(lineChartClick, gunClick, None, raceBarChartClick, ageBarClick, mentalBarClick)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    choropleth_map = create_choropleth_map(filtered_df)
+    return choropleth_map
 
-#update bar chart race
 @app.callback(
     Output('bar-chart-race', 'figure'),
     [Input('choropleth-map', 'clickData'),
@@ -504,58 +501,18 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
      Input('intermediate-value-line-chart-year','children'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick, gunClick, intermediateBarChartMental, intermediateBarChartAge, intermediateChoroplethMap, intermediateLineYearData, n_clicks):
-    global df, df_reset
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        df =df_reset
-        viz_states['bar_chart_race']==0
+        viz_states['bar_chart_race']=0
         return create_bar_char_for_race(df)
     if viz_states['bar_chart_race']==1:
         return dash.no_update
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        bar_chart_race = create_bar_char_for_race(filter_by_date)
-        return bar_chart_race
-
-    if triggered_element =='line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        bar_chart_race = create_bar_char_for_race(filter_by_date)
-        df = filter_by_date
-        viz_states['line_chart'] = 1
-        viz_states['gun_chart'] = 1
-        return bar_chart_race
-
-    if triggered_element=='choropleth-map':
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        bar_chart_race = create_bar_char_for_race(filter_by_location)
-        df = filter_by_location
-        viz_states['choropleth_map'] = 1
-        return bar_chart_race
-
-    if triggered_element == 'bar-chart-age':
-        gender, age= get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        bar_chart_race = create_bar_char_for_race(filter_by_age_gender)
-        df = filter_by_age_gender
-        viz_states['bar_chart_age'] = 1
-        return bar_chart_race
-
-    if triggered_element == 'mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        bar_chart_race = create_bar_char_for_race(filter_by_mental_illness)
-        viz_states['bar_chart_mental'] = 1
-        return bar_chart_race
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, None, ageBarClick, mentalBarClick)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    bar_chart_race = create_bar_char_for_race(filtered_df)
+    print(viz_states)
+    return bar_chart_race
 
 #update line chart
 @app.callback(
@@ -571,76 +528,18 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
      Input('intermediate-value-choropleth-map','children'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_line_chart(mapClick, raceBarChartClick, ageBarClick, mentalBarClick, gunClick, intermediateBarChartMental, intermediateBarChartAge, intermediateBarChartRace, intermediateChoroplethMap, n_clicks):
-    global df, df_reset
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        df =df_reset
-        viz_states['line_chart']==0
+        viz_states['line_chart']=0
         return create_line_chart(df)
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if viz_states['line_chart']==1:
         return dash.no_update
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        line_chart = create_line_chart(filter_by_date)
-        return line_chart
-    if triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df = filter_by_race
-        line_chart = create_line_chart(filter_by_race)
-        viz_states['bar_chart_race'] = 1
-        return line_chart
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                get_viz_info(None, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick)
 
-    if triggered_element == 'choropleth-map':
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        df = filter_by_location
-        line_chart = create_line_chart(filter_by_location)
-        viz_states['choropleth_map'] = 1
-        return line_chart
-
-    if triggered_element == "bar-chart-age":
-        gender, age= get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        df = filter_by_age_gender
-        line_chart = create_line_chart(filter_by_age_gender)
-        viz_states['bar_chart_age'] = 1
-        return line_chart
-
-    if triggered_element == 'mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        line_chart = create_line_chart(filter_by_mental_illness)
-        viz_states['bar_chart_mental'] = 1
-        return line_chart
-
-
-def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick):
-    startDate=endDate=gunStartDate=gunEndDate=state=race=gender=age=mental_illness_value = ''
-    if lineChartClick is not None:
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-    if gunClick is not None:
-        gunStartDate = gunClick['xaxis.range[0]']
-        gunEndDate = gunClick['xaxis.range[1]']
-    if mapClick is not None:
-        state = mapClick['points'][0]['location']
-    if raceBarChartClick is not None:
-        race = raceBarChartClick['points'][0]['x']
-    if ageBarClick is not None:
-        gender, age= get_age_and_gender(ageBarClick)
-    if mentalBarClick is not None:
-        mental_illness_value = mentalBarClick['points'][0]['x']
-    return startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value
-
-
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    line_chart = create_line_chart(filtered_df)
+    return line_chart
 
 #update bar chart age and gender
 @app.callback(
@@ -656,60 +555,17 @@ def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarCl
      Input('intermediate-value-choropleth-map','children'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick, mentalBarClick, gunClick, intermediateBarChartMental, intermediateLineYearData, intermediateBarChartRace, intermediateChoroplethMap, n_clicks):
-
-
-    print(mapClick)
-    global df, df_reset, df_previous
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        df =df_reset
-        viz_states['bar_chart_age']==0
+        viz_states['bar_chart_age']=0
         return create_bar_chart_for_age_and_gender(df)
     if viz_states['bar_chart_age']==1:
         return dash.no_update
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_date)
-        return bar_chart_by_age
-    if triggered_element == 'choropleth-map':
-        if viz_states['choropleth_map']==1:
-            df_copy = df
-        df_previous = df_copy
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        df = filter_by_location
-        bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_location)
-        viz_states['choropleth_map'] = 1
-        return bar_chart_by_age
-    if triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df = filter_by_race
-        bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_race)
-        viz_states['bar_chart_race'] = 1
-        return bar_chart_by_age
-    if triggered_element == 'line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_date)
-        viz_states['line_chart'] = 1
-        viz_states['gun_chart'] = 1
-        return bar_chart_by_age
-    if triggered_element == 'mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        bar_chart_by_age = create_bar_chart_for_age_and_gender(filter_by_mental_illness)
-        viz_states['bar_chart_mental'] = 1
-        viz_states['gun_chart'] = 1
-        return bar_chart_by_age
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, None, mentalBarClick)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    bar_chart_by_age = create_bar_chart_for_age_and_gender(filtered_df)
+    return bar_chart_by_age
 
 #update mental illness bar chart
 @app.callback(
@@ -725,57 +581,17 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
      Input('intermediate-value-choropleth-map','children'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick, ageBarClick, gunClick, intermediateBarChartAge, intermediateLineYearData, intermediateBarChartRace, intermediateChoroplethMap, n_clicks):
-    global df, df_reset
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        df =df_reset
-        viz_states['bar_chart_mental']==0
+        viz_states['bar_chart_mental']=0
         return create_bar_chart_for_mental_illness(df)
     if viz_states['bar_chart_mental']==1:
         return dash.no_update
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df =filter_by_date
-        bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_date)
-        return bar_chart_by_mental_illness
-    if triggered_element == 'choropleth-map':
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        df = filter_by_location
-        bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_location)
-        viz_states['choropleth_map'] = 1
-        return bar_chart_by_mental_illness
-
-    if triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df = filter_by_race
-        bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_race)
-        viz_states['bar_chart_race'] = 1
-        return bar_chart_by_mental_illness
-
-    if triggered_element == 'line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_date)
-        viz_states['line_chart'] = 1
-        viz_states['gun_chart'] = 1
-        return bar_chart_by_mental_illness
-
-    if triggered_element == 'bar-chart-age':
-        gender, age= get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        df = filter_by_age_gender
-        bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filter_by_age_gender)
-        viz_states['bar_chart_age'] = 1
-        return bar_chart_by_mental_illness
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, None)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filtered_df)
+    return bar_chart_by_mental_illness
 
 #update weapon radar chart
 @app.callback(
@@ -793,68 +609,40 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
      Input('intermediate-value-bar-chart-mental','children'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageBarClick, mentalBarClick, gunClick, intermediateBarChartAge, intermediateLineYearData, intermediateBarChartRace, intermediateChoroplethMap, intermediateBarChartMental, n_clicks):
-    global df, df_reset
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        df =df_reset
-        viz_states['radar_chart_weapons']==0
+        viz_states['radar_chart_weapons']=0
         return create_radar_chart_for_weapons(df)
     if viz_states['radar_chart_weapons']==1:
         return dash.no_update
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    radar_chart_for_weapons = create_radar_chart_for_weapons(filtered_df)
+    return radar_chart_for_weapons
+
+#update line chart for gun purchase
+@app.callback(
+    Output('gun-line-chart', 'figure'),
+    [Input('line-chart','relayoutData'),
+     Input('reset_button','n_clicks')], prevent_initial_call=True)
+def update_gun_data_line_chart(lineChartClick, n_clicks):
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
-        return radar_chart_for_weapons
-
-    if triggered_element == 'choropleth-map':
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        df = filter_by_location
-        radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_location)
-        viz_states['choropleth_map'] = 1
-        return radar_chart_for_weapons
-
-    if triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df = filter_by_race
-        radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_race)
-        viz_states['bar_chart_race'] = 1
-        return radar_chart_for_weapons
-
-    if triggered_element == 'line-chart':
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    if changed_id=='reset_button':
+        viz_states['gun_chart'] = 0
+        return create_line_chart_gun_data(gun_data)
+    if viz_states['gun_chart']==1:
+        return dash.no_update
+    if triggered_element=='line-chart':
         startDate = lineChartClick['xaxis.range[0]']
         endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_date)
+        filter_gun_data_by_date = gun_data[(gun_data['date']>=startDate) & (gun_data['date']<=endDate)]
+        gun_data_line_chart = create_line_chart_gun_data(filter_gun_data_by_date)
         viz_states['line_chart'] = 1
         viz_states['gun_chart'] = 1
-        return radar_chart_for_weapons
+        return gun_data_line_chart
 
-    if triggered_element == 'bar-chart-age':
-        gender, age= get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        df = filter_by_age_gender
-        radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_age_gender)
-        viz_states['bar_chart_age'] = 1
-        return radar_chart_for_weapons
-
-    if triggered_element == 'mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        radar_chart_for_weapons = create_radar_chart_for_weapons(filter_by_mental_illness)
-        viz_states['bar_chart_mental'] = 1
-        return radar_chart_for_weapons
-
-#update sankey diagram
 @app.callback(
     Output('sankey-diagram', 'figure'),
     [Input('bar-chart-race', 'clickData'),
@@ -870,83 +658,15 @@ def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageB
     Input('intermediate-value-bar-chart-mental','children'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mentalBarClick, gunClick, intermediateBarChartAge, intermediateLineYearData, intermediateBarChartRace, intermediateChoroplethMap, intermediateBarChartMental, n_clicks):
-    global df, df_reset
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
+        viz_states['bar_chart_age']=0
         return create_sankey_diagram(df)
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        #if viz_states['gun_chart']==1:
-        #    return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        sankey_diagram = create_sankey_diagram(filter_by_date)
-        return sankey_diagram
-    if triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df = filter_by_race
-        sankey_diagram = create_sankey_diagram(filter_by_race)
-        viz_states['bar_chart_race'] = 1
-        return sankey_diagram
-
-    elif triggered_element =='bar-chart-age':
-        gender, age= get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        df = filter_by_age_gender
-        sankey_diagram = create_sankey_diagram(filter_by_age_gender)
-        viz_states['bar_chart_age'] = 1
-        return sankey_diagram
-
-    elif triggered_element =='line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        sankey_diagram = create_sankey_diagram(filter_by_date)
-        viz_states['line_chart'] = 1
-        viz_states['gun_chart'] = 1
-        return sankey_diagram
-
-    elif triggered_element == 'choropleth-map':
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        df = filter_by_location
-        sankey_diagram = create_sankey_diagram(filter_by_location)
-        viz_states['choropleth_map'] = 1
-        return sankey_diagram
-
-    elif triggered_element =='mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        sankey_diagram = create_sankey_diagram(filter_by_mental_illness)
-        viz_states['bar_chart_mental'] = 1
-        return sankey_diagram
-
-#update line chart for gun purchase
-@app.callback(
-    Output('gun-line-chart', 'figure'),
-    [Input('line-chart','relayoutData'),
-     Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_gun_data_line_chart(lineChartClick, n_clicks):
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
-    if changed_id=='reset_button':
-        viz_states['gun_chart'] = 0
-        return create_line_chart_gun_data(gun_data)
-    #if viz_states['gun_chart']==1:
-    #    return dash.no_update
-    if triggered_element=='line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_gun_data_by_date = gun_data[(gun_data['date']>=startDate) & (gun_data['date']<=endDate)]
-        gun_data_line_chart = create_line_chart_gun_data(filter_gun_data_by_date)
-        viz_states['line_chart'] = 1
-        viz_states['gun_chart'] = 1
-        return gun_data_line_chart
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    sankey_diagram = create_sankey_diagram(filtered_df)
+    return sankey_diagram
 
 #update indicator graph
 @app.callback(
@@ -959,52 +679,15 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
      Input('gun-line-chart', 'relayoutData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mentalBarClick, gunClick, n_clicks):
-    global df
-    df_copy = df
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        #df = pd.read_csv('data/police-killings-integrated-dataset-2021-03-20.json.gz')
         return indicator_graph(len(df))
-    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    if triggered_element == 'gun-line-chart':
-        if viz_states['gun_chart']==1:
-            return dash.no_update
-        startDate = gunClick['xaxis.range[0]']
-        endDate = gunClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        updated_indicator_graph = indicator_graph(len(filter_by_date))
-        return updated_indicator_graph
-    if triggered_element=='line-chart':
-        startDate = lineChartClick['xaxis.range[0]']
-        endDate = lineChartClick['xaxis.range[1]']
-        filter_by_date = df_copy[(df_copy['date']>=startDate) & (df_copy['date']<=endDate)]
-        df = filter_by_date
-        updated_indicator_graph = indicator_graph(len(filter_by_date))
-        return updated_indicator_graph
-    elif triggered_element =='bar-chart-race':
-        race = raceBarChartClick['points'][0]['x']
-        filter_by_race = df_copy[df_copy['race']==race]
-        df = filter_by_race
-        updated_indicator_graph = indicator_graph(len(filter_by_race))
-        return updated_indicator_graph
-    elif triggered_element =='bar-chart-age':
-        gender, age = get_age_and_gender(ageBarClick)
-        filter_by_age_gender = df_copy[(df_copy['gender']==gender) & (df_copy['age_bins']==age)]
-        df = filter_by_age_gender
-        updated_indicator_graph = indicator_graph(len(filter_by_age_gender))
-        return updated_indicator_graph
-    elif triggered_element == 'choropleth-map':
-        filter_by_location = df_copy[df_copy['state']==mapClick['points'][0]['location']]
-        df = filter_by_location
-        updated_indicator_graph = indicator_graph(len(filter_by_location))
-        return updated_indicator_graph
-    elif triggered_element == 'mental-illness-bar':
-        mental_illness_value = mentalBarClick['points'][0]['x']
-        filter_by_mental_illness = df_copy[df_copy['signs_of_mental_illness']==mental_illness_value]
-        df = filter_by_mental_illness
-        updated_indicator_graph = indicator_graph(len(filter_by_mental_illness))
-        return updated_indicator_graph
+
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value = \
+                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
+    updated_indicator_graph = indicator_graph(len(filtered_df))
+    return updated_indicator_graph
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
