@@ -2,19 +2,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-def trigger_bar_chart_race(df):
-    race = raceBarChartClick['points'][0]['x']
-    filter_by_race = df[df['race']==race]
-    choropleth_map = create_choropleth_map(filter_by_race)
-    return choropleth_map
-
-def trigger_line_chart_year(df):
-    startDate = lineChartClick['xaxis.range[0]']
-    endDate = lineChartClick['xaxis.range[1]']
-    filter_by_date = intermediateBarChartRace[(intermediateBarChartRace['date']>=startDate) & (intermediateBarChartRace['date']<=endDate)]
-    choropleth_map = create_choropleth_map(filter_by_date)
-    return choropleth_map
-
 def get_age_and_gender(stackBarClick):
     gender_id = stackBarClick['points'][0]['curveNumber']
     if gender_id==0:
@@ -65,7 +52,7 @@ def create_choropleth_map(df):
                                 title_font_family="Georgia",
                                 font_size=25,
                                 dragmode=False,
-                                #paper_bgcolor='rgba(0,0,0,0)',
+                                paper_bgcolor='rgba(0,0,0,0)',
                                 #plot_bgcolor='rgba(0,0,0,0)'
                                 )
     return choropleth_map
@@ -78,7 +65,7 @@ def create_line_chart(df):
     line_chart.update_xaxes(showspikes=True, spikecolor="green", spikesnap="cursor", spikemode="across")
     line_chart.update_yaxes(showspikes=True, spikecolor="orange", spikethickness=2)
     line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
-                            #paper_bgcolor='rgba(0,0,0,0)',
+                            paper_bgcolor='rgba(0,0,0,0)',
                             #plot_bgcolor='rgba(0,0,0,0)',
                             margin=dict(t=0,l=80,b=0,r=40),
                             xaxis_title='Year', height=700, width=2600,
@@ -94,7 +81,7 @@ def create_line_chart_gun_data(df_gun):
                                                     mode='lines+markers',
                                                     line={'color':'#30425e'}))
     gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
-                                      #paper_bgcolor='rgba(0,0,0,0)',
+                                      paper_bgcolor='rgba(0,0,0,0)',
                                       #plot_bgcolor='rgba(0,0,0,0)',
                                       margin=dict(t=0,l=80,b=0,r=40),
                                       xaxis_title='Year', height=700, width=2600,
@@ -113,7 +100,7 @@ def create_bar_chart_for_mental_illness(df):
                             orientation='v'
                             )
     mental_illness_bar.update_layout(clickmode='event+select',
-                                 #paper_bgcolor='rgba(0,0,0,0)',
+                                 paper_bgcolor='rgba(0,0,0,0)',
                                  #plot_bgcolor='rgba(0,0,0,0)',
                                  plot_bgcolor="#d1dade",
                                  margin=dict(t=50,l=200,b=80,r=40),
@@ -136,7 +123,7 @@ def create_radar_chart_for_weapons(df):
                                                         fill='toself'))
 
     radar_chart_by_weapon.update_layout(width=1400, height=900, font_size=30,
-                                        #paper_bgcolor='rgba(0,0,0,0)',
+                                        paper_bgcolor='rgba(0,0,0,0)',
                                         #plot_bgcolor='rgba(0,0,0,0)',
                                         margin=dict(t=50,l=200,b=80,r=40), hovermode='x unified',
                                         polar=dict(radialaxis=dict(visible=True)),
@@ -152,7 +139,7 @@ def create_bar_char_for_race(df):
                         category_orders ={'gender':['Male','Female']})
     race_bar_chart.update_layout(clickmode='event+select',)
     race_bar_chart.update_layout(showlegend=True, plot_bgcolor="#d1dade",
-                            #paper_bgcolor='rgba(0,0,0,0)',
+                            paper_bgcolor='rgba(0,0,0,0)',
                             #plot_bgcolor='rgba(0,0,0,0)',
                             margin=dict(t=50,l=200,b=80,r=40),
                             xaxis={'categoryorder':'total descending'},
@@ -173,7 +160,7 @@ def create_bar_chart_for_age_and_gender(df):
                         category_orders ={'gender':['Male','Female']})
     stacked_bar.update_layout(clickmode='event+select', margin={"r":0,"t":0,"l":0,"b":0}),
     stacked_bar.update_layout(showlegend=True,plot_bgcolor="#d1dade",
-                              #paper_bgcolor='rgba(0,0,0,0)',
+                              paper_bgcolor='rgba(0,0,0,0)',
                               #plot_bgcolor='rgba(0,0,0,0)',
                               margin=dict(t=50,l=200,b=0,r=40),
                               xaxis_title='Age and Gender',
@@ -186,7 +173,7 @@ def create_bar_chart_for_age_and_gender(df):
 
 #Sankey Diagram
 def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
-    colorPalette = ['#be584b','#6dad23','#FFE873','#5e49eb','#646464']
+    colorPalette = ['#be584b','#6dad23','#FFE873','#5e49eb','#646464','#2a6147']
     labelList = []
     colorNumList = []
     for catCol in cat_cols:
@@ -245,7 +232,7 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
                                   Fleeing',
                       width=2800, height=900,
                       plot_bgcolor="#d1dade",
-                      hoverlabel = dict(font=dict(size=40)),
+                      hoverlabel = dict(font=dict(size=20)),
                       margin=dict(t=70,l=100,b=20,r=100),
                       #paper_bgcolor='rgba(0,0,0,0)',
                       #plot_bgcolor='rgba(0,0,0,0)',
@@ -254,9 +241,9 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
     return fig
 
 def create_sankey_diagram(df):
-    df_grouped_sankey = df.groupby(['race','age_bins','gender','threat_level','flee'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
+    df_grouped_sankey = df.groupby(['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
     sankey_diagram = generateSankey(df_grouped_sankey,
-                               ['race','age_bins','gender','threat_level','flee'],
+                               ['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'],
                                value_cols='count',
                                )
 
