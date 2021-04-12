@@ -108,7 +108,8 @@ app.layout = html.Div([
                     style={'margin-left':'170px',}
                     ),
             html.Img(src='assets/gun_logo.png',width='50%', height='20%',),
-            html.Button('RESET ALL',id='reset_button', n_clicks=0,
+            #html.A(html.Button('Refresh Data'),href='/'),
+            html.A(html.Button('RESET ALL',id='reset_button', n_clicks=0,
                         style={'background-color': '#DADADA',
                                 'border':'none',
                                 'padding': '15px 32px',
@@ -120,7 +121,7 @@ app.layout = html.Div([
                                 'text-align': 'center',
                                 'text-decoration': 'none',
                                 'display': 'inline-block',
-                                'font-size': '30px'}),
+                                'font-size': '30px'}), href='/'),
             ],
             style={'flex':'25%',
                     'background-color': '#c8d7e3',
@@ -408,6 +409,7 @@ def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarCl
         age = [age]
     if mentalBarClick is not None:
         mental_illness_value = [mentalBarClick['points'][0]['x']]
+    print(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
     return startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value
 
 def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value):
@@ -476,6 +478,7 @@ def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, age
     Input('reset_button','n_clicks')], prevent_initial_call=True)
 def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mentalBarClick, gunClick, intermediateBarChartMental, intermediateLineYearData, intermediateBarChartRace, intermediateBarChartAge, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
+    print(viz_states)
     if changed_id=='reset_button':
         viz_states['choropleth_map']=0
         return create_choropleth_map(df)
@@ -511,7 +514,6 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
                 get_viz_info(lineChartClick, gunClick, mapClick, None, ageBarClick, mentalBarClick)
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value)
     bar_chart_race = create_bar_char_for_race(filtered_df)
-    print(viz_states)
     return bar_chart_race
 
 #update line chart
