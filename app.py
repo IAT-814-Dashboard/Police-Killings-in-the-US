@@ -23,32 +23,97 @@ viz_states = {'bar_chart_race':0, 'choropleth_map':0, 'line_chart':0, \
 
 app.layout = html.Div([
 
+html.Div([
+
+    html.Div([
+    html.A(html.Button('GITHUB', id='github_link', n_clicks=0,
+                style={'background-color': '#c8d7e3',
+                        'border':'none',
+                        'padding': '15px 32px',
+                        'border-radius': '25px',
+                        #'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                        'display':'inline-block',
+                        'width':'60%',
+                        'height':'100px',
+                        'text-align': 'center',
+                        'margin-left':'35px',
+                        'font-weight':'bold',
+                        'text-decoration': 'none',
+                        'display': 'inline-block',
+                        'font-size': '40px'}), href='/'),
+    ],style={'flex':'10%'}),
+
+    html.Div([
+        html.H1(children='IAT 814',
+                style = {'textAlign' : 'center',
+                         'color': 'white',
+                         'font-family': 'Proxima Nova',
+                         'margin-top':'40px',
+                         'font-size': '50px',
+                         'font-weight': 'bold',
+                         'letter-spacing': '-1px',
+                         'line-height': '1' }
+        )],
+        className='title',
+        style = {
+                 'flex':'80%'}),
+
+    html.Div([
+    html.A(html.Button('PROJECT REPORT', id='report_button', n_clicks=0,
+                style={'background-color': '#c8d7e3',
+                        'border':'none',
+                        'padding': '15px 32px',
+                        #'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                        'border-radius': '25px',
+                        'display':'inline-block',
+                        'width':'400px',
+                        'height':'100px',
+                        'text-align': 'center',
+                        'margin-left':'70px',
+                        'font-weight':'bold',
+                        'text-decoration': 'none',
+                        'display': 'inline-block',
+                        'font-size': '40px'}), href='/'),
+    ],style={'flex':'10%'}),
+    ],
+    className = 'heading-row',
+    style = {'height' : '4%',
+            'display':'flex',
+            'margin-top': '15px',
+            'margin-left': '50px',
+            'margin-right': '80px',}
+),
+
 #title
     html.Div([
+
         html.Div([
-            html.H1(children='IAT 814: Police Killings in the United States',
+            html.H1(children='Police Killings in the United States',
                     style = {'textAlign' : 'center',
                              'color': 'white',
                              'font-family': 'Proxima Nova',
                              'font-size': '50px',
-                             'font-weight': 'bold',
+                             #'font-weight': 'bold',
                              'letter-spacing': '-1px',
                              'line-height': '1' }
             )],
             className='title',
             style = {'padding-top' : '1%',
-                     'padding-bottom': '1%'}),
+                     'padding-bottom': '1%',
+                     'flex':'80%'}),
         ],
         className = 'heading-row',
         style = {'height' : '4%',
-                'border': 'solid black',
-                'border-color': 'black',
-                'border-width': ' 10px 10px 10px 10px',
-                'background-color' : '#488A99',
+                'display':'flex',
+                'border-radius': '25px',
+                #'border': 'solid black',
+                #'border-color': 'black',
+                #'border-width': ' 10px 10px 10px 10px',
+                'background-color' : '#4a90a1',
                 'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                'margin-top': '55px',
-                'margin-left': '35px',
-                'margin-right': '35px',}
+                'margin-top': '25px',
+                'margin-left': '80px',
+                'margin-right': '80px',}
     ),
 
 
@@ -65,11 +130,11 @@ app.layout = html.Div([
                                 'font-weight': 'bold',
                                 'line-height': '1',
                                 }),
-                dcc.Loading(dcc.Graph(
+                dcc.Graph(
                         id='line-chart',
                         figure=create_line_chart(df),
                         config = {'displayModeBar': False}
-                ))], style={'flex':'60%',
+                )], style={'flex':'60%',
                             'margin-right':'20px',
                             'border': 'solid white',
                             'border-color': 'white',
@@ -81,7 +146,7 @@ app.layout = html.Div([
 
         html.Div([
             html.Div([
-            html.H3(children='Total Number of Police Killings',
+            html.H3(children= 'TOTAL NUMBER OF POLICE KILLINGS',#'Total Number of Police Killings',
                     style={
                             'textAlign':'center',
                             'color': 'black',
@@ -100,6 +165,7 @@ app.layout = html.Div([
                       'margin-bottom':'40px',
                       'padding-top':'50px',
                       'padding-bottom':'50px',
+                      'border-radius': '25px',
                       'background-color': '#c8d7e3',
                       'text-align':'center',
                       'border': 'solid white',
@@ -111,6 +177,7 @@ app.layout = html.Div([
             html.A(html.Button('RESET ALL', id='reset_button', n_clicks=0,
                         style={'background-color': '#c8d7e3',
                                 'border':'none',
+                                'border-radius': '25px',
                                 'padding': '15px 32px',
                                 'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                                 'display':'inline-block',
@@ -118,7 +185,7 @@ app.layout = html.Div([
                                 'height':'150px',
                                 'text-align': 'center',
                                 'margin-left':'70px',
-                                'font-weight':'60px',
+                                'font-weight':'bold',
                                 'margin-bottom':'50px',
                                 'text-decoration': 'none',
                                 'display': 'inline-block',
@@ -141,6 +208,7 @@ app.layout = html.Div([
             html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
         ], style={'float':'left','flex':'25%',
                   'text-align':'center',
+                  'border-radius': '25px',
                   'background-color':'#c8d7e3',
                   'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                   'font-family': 'Proxima Nova',
@@ -155,8 +223,8 @@ app.layout = html.Div([
     style={'display':'flex',
            'height':'50%',
            'margin-top':'30px',
-           'margin-left': '35px',
-           'margin-right': '35px',
+           'margin-left': '80px',
+           'margin-right': '80px',
            }
     ),
 
@@ -172,12 +240,12 @@ app.layout = html.Div([
                             'margin-bottom':'10px',
                             'font-weight': 'bold',
                             'line-height': '1'}),
-            dcc.Loading(dcc.Graph(
+            dcc.Graph(
                     id='gun-line-chart',
                     figure=create_line_chart_gun_data(gun_data),
                     config = {'displayModeBar': False}
 
-            )),
+            ),
         ], style={'flex':'60%',
                     'background-color':'#c8d7e3',
                     'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
@@ -185,7 +253,7 @@ app.layout = html.Div([
                     'border-color': 'white',
                     'border-width': ' 5px 5px 5px 5px',
                     'padding':'20px',
-                    'margin-left': '20px',
+                    #'margin-left': '50px',
                     'margin-right': '20px',}),
         html.Div([
                 html.H3('Police Killings by State',
@@ -201,7 +269,7 @@ app.layout = html.Div([
                         figure=create_choropleth_map(df),
                         config = {'displayModeBar': False}
                 ))], style={'flex':'40%',
-                            'margin-right':'20px',
+                            #'margin-right':'20px',
                             'border': 'solid white',
                             'border-color': 'white',
                             'border-width': ' 5px 5px 5px 5px',
@@ -212,11 +280,11 @@ app.layout = html.Div([
     ],
     className='year-state',
     style={'display':'flex',
-        'background-color':'#c8d7e3',
+
            'height':'100%',
            'margin-top':'30px',
-           'margin-left': '35px',
-           'margin-right': '35px',}
+           'margin-left': '80px',
+           'margin-right': '80px',}
     ),
 
 
@@ -236,18 +304,18 @@ html.Div([
             dcc.Graph(
                     id='bar-chart-race',
                     figure=create_bar_chart_for_race(df),
-                    config={'doubleClick':'reset', 'displayModeBar': False},
+                    config={'doubleClick':'reset',
+                            'displayModeBar': False},
             )], style={'flex':'34%',
                         'border': 'solid white',
                         'border-color': 'white',
                         'border-width': '5px 5px 5px 5px',
                         'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                        #'padding'
-                        'padding':'20px', 'background-color':'#c8d7e3'
+                        'margin-right':'40px',
+                        'padding':'20px',
+                        'background-color':'#c8d7e3'
                         }
-                        #'border-radius': '15px'}
-
-            , className='pie-block'),
+            , className='race-block'),
 
     html.Div([
             html.H3('Police Killings by Age and Gender',
@@ -266,13 +334,12 @@ html.Div([
             )], style={'flex':'33%',
                         'border': 'solid white',
                         'border-color': 'white',
+                        'margin-right':'40px',
                         'border-width': '5px 5px 5px 0px',
                         'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                         'padding':'20px', 'background-color':'#c8d7e3'
                         }
-                        #'border-radius': '15px'}
-
-            , className='stacked-bar-block'),
+            , className='age-block'),
 
     html.Div([
             html.H3('Police Killings by Signs of Mental Illness',
@@ -287,7 +354,8 @@ html.Div([
             dcc.Graph(
                     id='mental-illness-bar',
                     figure=create_bar_chart_for_mental_illness(df),
-                    config={'doubleClick':'reset', 'displayModeBar': False},
+                    config={'doubleClick':'reset',
+                            'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
                         'border': 'solid white',
@@ -297,15 +365,15 @@ html.Div([
                         'padding':'20px', 'background-color':'#c8d7e3'
                         }
 
-            , className='stacked-bar-block'),
+            , className='mental-block'),
 
 ],
 className='bar-chart-block',
 style={'display':'flex',
        'height':'100%',
        'margin-top':'30px',
-       'margin-left': '35px',
-       'margin-right': '35px',
+       'margin-left': '80px',
+       'margin-right': '80px',
        }
 ),
 
@@ -327,9 +395,11 @@ html.Div([
             )], style={'flex':'30%',
                         'border': 'solid white',
                         'border-color': 'white',
+                        'margin-right':'40px',
                         'border-width': ' 5px 5px 5px 5px',
                         'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                        'padding':'20px', 'background-color':'#c8d7e3'}
+                        'padding':'20px',
+                        'background-color':'#c8d7e3'}
             ,className='weapon-block'),
 
     html.Div([
@@ -345,16 +415,16 @@ html.Div([
             dcc.Graph(
                     id='bar-chart-threat-level',
                     figure=create_bar_chart_for_threat_level(df),
-                    config={'doubleClick':'reset'},
+                    config={'doubleClick':'reset',
+                            'displayModeBar': False},
             )], style={'flex':'33%',
                         'border': 'solid white',
+                        'margin-right':'40px',
                         'border-color': 'white',
                         'border-width': '5px 5px 5px 0px',
                         'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                         'padding':'20px', 'background-color':'#c8d7e3'
                         }
-                        #'border-radius': '15px'}
-
             , className='threat-level-block'),
 
     html.Div([
@@ -370,7 +440,8 @@ html.Div([
             dcc.Graph(
                     id='bar-chart-fleeing',
                     figure=create_bar_chart_for_fleeing(df),
-                    config={'doubleClick':'reset'},
+                    config={'doubleClick':'reset',
+                            'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
                         'border': 'solid white',
@@ -387,8 +458,8 @@ className='bar-chart-block-2',
 style={'display':'flex',
        'height':'100%',
        'margin-top':'30px',
-       'margin-left': '35px',
-       'margin-right': '35px',
+       'margin-left': '80px',
+       'margin-right': '80px',
        }
 ),
 
@@ -398,7 +469,9 @@ style={'display':'flex',
                 dcc.Graph(
                         id='sankey-diagram',
                         figure=create_sankey_diagram(df),
-                        style={'margin-left':'50px', 'margin-right':'50px'}
+                        style={'margin-left':'50px', 'margin-right':'50px'},
+                        config={'doubleClick':'reset',
+                                'displayModeBar': False},
 
                 )], style={'flex':'100%',
                             'border': 'solid white',
@@ -414,8 +487,8 @@ style={'display':'flex',
     style={'display':'flex',
            'height':'100%',
            'margin-top':'30px',
-           'margin-left': '35px',
-           'margin-right': '35px',
+           'margin-left': '80px',
+           'margin-right': '80px',
            'margin-bottom':'40px'}
     ),
 
@@ -729,7 +802,7 @@ def update_line_chart(mapClick, raceBarChartClick, ageBarClick, mentalBarClick, 
         viz_states['line_chart']=0
         viz_states['gun_chart']=0
         return create_line_chart(df), create_line_chart_gun_data(gun_data)
-    if viz_states['line_chart']==1 or viz_states['gun_chart']:
+    if viz_states['line_chart']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(None, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
@@ -779,12 +852,15 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
 def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        return indicator_graph(len(df))
+        return len(df)
 
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                     get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
-    updated_indicator_graph = indicator_graph(len(filtered_df))
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='gun-line-chart':
+        filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    else:
+        filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     return len(filtered_df)
 
 #-----------------------------------------------------------------------------------------------------------------------------------
