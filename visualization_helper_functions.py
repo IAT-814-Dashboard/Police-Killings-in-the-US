@@ -45,8 +45,8 @@ def create_choropleth_map(df):
                                  hoverlabel = dict(font=dict(size=25)))
     choropleth_map.update_layout(plot_bgcolor="#d1dade",
                                 margin=dict(t=0,l=80,b=0,r=40),
-                                font_family="Roboto",
-                                title_font_family="Roboto",
+                                font_family="Proxima Nova",
+                                title_font_family="Proxima Nova",
                                 font_size=25,
                                 dragmode=False,
                                 paper_bgcolor='rgba(0,0,0,0)',
@@ -71,8 +71,8 @@ def create_line_chart(df):
                              margin=dict(t=0,l=80,b=0,r=40),
                              xaxis_title='Year', height=700, width=2600,
                              yaxis_title='Number of Killings',
-                             font_family="Roboto",
-                             title_font_family="Roboto",
+                             font_family="Proxima Nova",
+                             title_font_family="Proxima Nova",
                              font_size=30,
                              hoverlabel = dict(font=dict(size=30)),
                              )
@@ -91,10 +91,10 @@ def create_line_chart_gun_data(df_gun):
                                       height=700,
                                       width=2600,
                                       yaxis_title='Number of Gun Purchase',
-                                      font_family="Roboto",
+                                      font_family="Proxima Nova",
                                       #hovermode='x unified',
                                       hoverlabel = dict(font=dict(size=30)),
-                                      title_font_family="Roboto",font_size=30)
+                                      title_font_family="Proxima Nova",font_size=30)
     return gun_data_line_chart
 
 def create_bar_chart_for_mental_illness(df):
@@ -114,8 +114,8 @@ def create_bar_chart_for_mental_illness(df):
                                      margin=dict(t=50,l=200,b=80,r=40),
                                      xaxis_title='Signs of Mental Illness',
                                      yaxis_title='Number of Killings',
-                                     font_family="Roboto",
-                                     title_font_family="Roboto",
+                                     font_family="Proxima Nova",
+                                     title_font_family="Proxima Nova",
                                      hoverlabel = dict(font=dict(size=30)),
                                      font_size=25,
                                      xaxis_tickangle=-45)
@@ -156,8 +156,8 @@ def create_pie_chart_for_weapons(df):
                                     hoverlabel = dict(font=dict(size=30)),
                                     paper_bgcolor='rgba(0,0,0,0)',
                                     margin=dict(t=0,l=80,b=0,r=40),
-                                    font_family="Roboto",
-                                    title_font_family="Roboto")
+                                    font_family="Proxima Nova",
+                                    title_font_family="Proxima Nova")
     return pie_chart_weapons
 
 
@@ -179,8 +179,8 @@ def create_bar_chart_for_threat_level(df):
                                          xaxis={'categoryorder':'total descending'},
                                          xaxis_title='Threat Level',
                                          yaxis_title='Number of Killings',
-                                         font_family="Roboto",
-                                         title_font_family="Roboto",
+                                         font_family="Proxima Nova",
+                                         title_font_family="Proxima Nova",
                                          font_size=25,
                                          xaxis_tickangle=-45)
     return threat_level_bar_chart
@@ -203,8 +203,8 @@ def create_bar_chart_for_fleeing(df):
                                     xaxis={'categoryorder':'total descending'},
                                     xaxis_title='Type of Fleeing',
                                     yaxis_title='Number of Killings',
-                                    font_family="Roboto",
-                                    title_font_family="Roboto",
+                                    font_family="Proxima Nova",
+                                    title_font_family="Proxima Nova",
                                     font_size=25,
                                     xaxis_tickangle=-45)
     return fleeing_bar_chart
@@ -227,8 +227,8 @@ def create_bar_chart_for_race(df):
                                  xaxis={'categoryorder':'total descending'},
                                  xaxis_title='Race',
                                  yaxis_title='Number of Killings',
-                                 font_family="Roboto",
-                                 title_font_family="Roboto",
+                                 font_family="Proxima Nova",
+                                 title_font_family="Proxima Nova",
                                  hoverlabel = dict(font=dict(size=30)),
                                  font_size=25,
                                  xaxis_tickangle=-45)
@@ -252,9 +252,9 @@ def create_bar_chart_for_age_and_gender(df):
                               margin=dict(t=50,l=200,b=0,r=40),
                               xaxis_title='Age and Gender',
                               yaxis_title='Number of Killings',
-                              font_family="Roboto",
+                              font_family="Proxima Nova",
                               hoverlabel = dict(font=dict(size=30)),
-                              title_font_family="Roboto",font_size=25,
+                              title_font_family="Proxima Nova",font_size=25,
                               xaxis_tickangle=-45)
     return bar_age_gender
 
@@ -297,10 +297,10 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
     fig = go.Figure(data=[go.Sankey(
         node = dict(
           pad = 15,
-          thickness = 20,
+          thickness = 30,
           line = dict(
             color = "green",
-            width = 0.5
+            width = 0.8
           ),
           label = labelList,
           color = colorList
@@ -328,8 +328,8 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
                       hoverlabel = dict(font=dict(size=30)),
                       margin=dict(t=70,l=100,b=20,r=100),
                       paper_bgcolor='rgba(0,0,0,0)',
-                      font_family="Roboto",
-                      title_font_family="Roboto",
+                      font_family="Proxima Nova",
+                      title_font_family="Proxima Nova",
                       #font_color='#edf3f7',
                       font_size=28)
     return fig

@@ -29,7 +29,7 @@ app.layout = html.Div([
             html.H1(children='IAT 814: Police Killings in the United States',
                     style = {'textAlign' : 'center',
                              'color': 'white',
-                             'font-family': 'Roboto',
+                             'font-family': 'Proxima Nova',
                              'font-size': '50px',
                              'font-weight': 'bold',
                              'letter-spacing': '-1px',
@@ -59,7 +59,7 @@ app.layout = html.Div([
                         style={
                                 'textAlign':'center',
                                 'color': 'black',
-                                'font-family': 'Roboto',
+                                'font-family': 'Proxima Nova',
                                 'font-size': '38px',
                                 'margin-bottom':'10px',
                                 'font-weight': 'bold',
@@ -67,7 +67,8 @@ app.layout = html.Div([
                                 }),
                 dcc.Loading(dcc.Graph(
                         id='line-chart',
-                        figure=create_line_chart(df)
+                        figure=create_line_chart(df),
+                        config = {'displayModeBar': False}
                 ))], style={'flex':'60%',
                             'margin-right':'20px',
                             'border': 'solid white',
@@ -84,7 +85,7 @@ app.layout = html.Div([
                     style={
                             'textAlign':'center',
                             'color': 'black',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-size': '38px',
                             'margin-top':'20px',
                             'margin-bottom':'30px',
@@ -107,17 +108,6 @@ app.layout = html.Div([
                       'border-width': ' 5px 5px 5px 5px',
                       'padding':'20px'},),
 
-            #html.Div([
-            #
-            #html.Div(dcc.Loading(
-            #            dcc.Graph(
-            #                    id="indicator-graph",
-            #                    figure=indicator_graph(len(df)),
-            #                    )),
-            #        style={'margin-left':'170px',}
-            #        ),
-
-
             html.A(html.Button('RESET ALL', id='reset_button', n_clicks=0,
                         style={'background-color': '#c8d7e3',
                                 'border':'none',
@@ -128,18 +118,18 @@ app.layout = html.Div([
                                 'height':'150px',
                                 'text-align': 'center',
                                 'margin-left':'70px',
-                                #'position':'absolute',
                                 'font-weight':'60px',
                                 'margin-bottom':'50px',
                                 'text-decoration': 'none',
                                 'display': 'inline-block',
                                 'font-size': '40px'}), href='/'),
             html.Img(src='https://i.etsystatic.com/17857814/r/il/267c7e/1832681232/il_570xN.1832681232_lcsc.jpg',width='500px', height='350px',
-                     style={'margin-left':'200px', 'mix-blend-mode':'multiply',
+                     style={'margin-left':'200px',
+                            'mix-blend-mode':'multiply',
                             'margin-right':'40px'}),
             ],
             style={'flex':'25%',
-                    'padding':'20px'}),
+                   'padding':'20px'}),
 
         html.Div([
             html.P('Police brutality is the use of excessive or unnecessary force by personnel affiliated with law enforcement duties when dealing with suspects and civilians.\
@@ -147,14 +137,13 @@ app.layout = html.Div([
                    This dashboard can be used to explore the possible causes for Police Killings in the United States.',
                    style={'padding-top':'60px'}),
             html.Br(),
-            #html.P('There has been 900 fatal police shooting every year since 2005')
 
             html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
         ], style={'float':'left','flex':'25%',
                   'text-align':'center',
                   'background-color':'#c8d7e3',
                   'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                  'font-family': 'Roboto',
+                  'font-family': 'Proxima Nova',
                   'font-size': '40px',
                   'padding':'20px',
                   'border': 'solid white',
@@ -178,14 +167,16 @@ app.layout = html.Div([
                     style={
                             'textAlign':'center',
                             'color': 'black',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-size': '38px',
                             'margin-bottom':'10px',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Loading(dcc.Graph(
                     id='gun-line-chart',
-                    figure=create_line_chart_gun_data(gun_data)
+                    figure=create_line_chart_gun_data(gun_data),
+                    config = {'displayModeBar': False}
+
             )),
         ], style={'flex':'60%',
                     'background-color':'#c8d7e3',
@@ -201,13 +192,14 @@ app.layout = html.Div([
                         style={
                                 'textAlign' : 'center',
                                 'color': 'black',
-                                'font-family': 'Roboto',
+                                'font-family': 'Proxima Nova',
                                 'margin-bottom':'25px',
                                 'font-size': '38px','font-weight': 'bold',
                                 'line-height': '1'}),
                 dcc.Loading(dcc.Graph(
                         id='choropleth-map',
                         figure=create_choropleth_map(df),
+                        config = {'displayModeBar': False}
                 ))], style={'flex':'40%',
                             'margin-right':'20px',
                             'border': 'solid white',
@@ -236,7 +228,7 @@ html.Div([
                     style={
                             'textAlign' : 'center',
                             'color': 'black',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'margin-bottom':'10px',
                             'font-size': '38px',
                             'font-weight': 'bold',
@@ -244,9 +236,7 @@ html.Div([
             dcc.Graph(
                     id='bar-chart-race',
                     figure=create_bar_chart_for_race(df),
-                    config={'doubleClick':'reset'},
-                    #config={#'responsive': True,
-                    #            'doubleClick':'reset'},
+                    config={'doubleClick':'reset', 'displayModeBar': False},
             )], style={'flex':'34%',
                         'border': 'solid white',
                         'border-color': 'white',
@@ -266,13 +256,13 @@ html.Div([
                             'color': 'black',
                             'margin-bottom':'10px',
                             'font-size': '38px',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Graph(
                     id='bar-chart-age',
                     figure=create_bar_chart_for_age_and_gender(df),
-                    config={'doubleClick':'reset'},
+                    config={'doubleClick':'reset', 'displayModeBar': False},
             )], style={'flex':'33%',
                         'border': 'solid white',
                         'border-color': 'white',
@@ -291,13 +281,13 @@ html.Div([
                             'color': 'black',
                             'margin-bottom':'10px',
                             'font-size': '38px',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Graph(
                     id='mental-illness-bar',
                     figure=create_bar_chart_for_mental_illness(df),
-                    config={'doubleClick':'reset'},
+                    config={'doubleClick':'reset', 'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
                         'border': 'solid white',
@@ -328,7 +318,7 @@ html.Div([
                             'color': 'black',
                             'margin-bottom':'10px',
                             'font-size': '38px',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Graph(
@@ -349,7 +339,7 @@ html.Div([
                             'color': 'black',
                             'margin-bottom':'10px',
                             'font-size': '38px',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Graph(
@@ -374,7 +364,7 @@ html.Div([
                             'color': 'black',
                             'margin-bottom':'10px',
                             'font-size': '38px',
-                            'font-family': 'Roboto',
+                            'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Graph(
@@ -801,5 +791,4 @@ def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapCl
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
-    #app.run_server(debug=False)
+    app.run_server(debug=False)
