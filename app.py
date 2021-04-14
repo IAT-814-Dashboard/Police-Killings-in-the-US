@@ -852,13 +852,14 @@ def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, men
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(None, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     if triggered_element=='gun-line-chart':
         filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     else:
         filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
-    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
-        state = mapDropdown
-        viz_states['map_dropdown'] = 1
+
     line_chart = create_line_chart(filtered_df)
     return line_chart
 
