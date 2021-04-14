@@ -9,6 +9,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from visualization_helper_functions import *
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -158,10 +159,15 @@ html.Div([
                             'font-weight': 'bold',
                             'line-height': '1',
                             }),
-            html.H1(id='indicator-graph',
-                    style={
-                            'font_size':'70px'
-                    }),
+            # html.H1(id='indicator-graph',
+            #         style={
+            #                 'font_size':'70px'
+            #         })
+            daq.LEDDisplay(
+            id='indicator-graph',
+            value=len(df),
+            backgroundColor="#c8d7e3",
+            color='black')
             ], style={'flex':'25%',
                       'margin-bottom':'40px',
                       'padding-top':'50px',
@@ -891,7 +897,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
 
 #update indicator graph
 @app.callback(
-    Output('indicator-graph','children'),
+    Output('indicator-graph','value'),
     [Input('line-chart','relayoutData'),
      Input('bar-chart-race', 'clickData'),
      Input('bar-chart-age', 'clickData'),
