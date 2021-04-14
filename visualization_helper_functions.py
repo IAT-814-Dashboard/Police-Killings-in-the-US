@@ -18,7 +18,6 @@ def get_age_and_gender(stackBarClick):
         gender='Male'
     else:
         gender='Female'
-
     age = stackBarClick['points'][0]['x']
     return gender, age
 
@@ -57,7 +56,9 @@ def create_line_chart(df):
                             spikecolor="green",
                             spikesnap="cursor",
                             spikemode="across")
-    line_chart.update_yaxes(showspikes=True, spikecolor="orange", spikethickness=2)
+    line_chart.update_yaxes(showspikes=True,
+                            spikecolor="orange",
+                            spikethickness=2)
     line_chart.update_layout(showlegend=False,
                              plot_bgcolor="#d1dade",
                              paper_bgcolor='rgba(0,0,0,0)',
@@ -77,6 +78,13 @@ def create_line_chart_gun_data(df_gun):
                                                     #fill='tozeroy',
                                                     mode='lines+markers',
                                                     line={'color':'#4379c4'}))
+    gun_data_line_chart.update_xaxes(showspikes=True,
+                                     spikecolor="green",
+                                     spikesnap="cursor",
+                                     spikemode="across")
+    gun_data_line_chart.update_yaxes(showspikes=True,
+                                     spikecolor="orange",
+                                     spikethickness=2)
     gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
                                       paper_bgcolor='rgba(0,0,0,0)',
                                       margin=dict(t=0,l=80,b=0,r=40),
@@ -132,6 +140,34 @@ def create_radar_chart_for_weapons(df):
                                         polar=dict(radialaxis=dict(visible=True)),
                                         showlegend=False)
     return radar_chart_by_weapon
+
+
+def create_bar_chart_for_weapons(df):
+    df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+    if df_group_by_weapon['count'].max() >10:
+        df_group_by_weapon = df_group_by_weapon[df_group_by_weapon['count']>10]
+    weapon_bar = px.bar(df_group_by_weapon,
+                        y="armed",
+                        x="count",
+                        hover_data=['count'],
+                        width=1400,
+                        height=800,
+                        color_discrete_sequence =['#a8c96f','#a8c96f'],
+                        )
+    weapon_bar.update_layout(clickmode='event+select',
+                             paper_bgcolor='rgba(0,0,0,0)',
+                             showlegend=False,
+                             plot_bgcolor="#d1dade",
+                             margin=dict(t=50,l=200,b=80,r=40),
+                             xaxis_title='Signs of Mental Illness',
+                             yaxis_title='Number of Killings',
+                             font_family="Proxima Nova",
+                             title_font_family="Proxima Nova",
+                             hoverlabel = dict(font=dict(size=30)),
+                             font_size=30,
+                             xaxis_tickangle=-45)
+
+    return weapon_bar
 
 def create_pie_chart_for_weapons(df):
     df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
@@ -211,7 +247,7 @@ def create_bar_chart_for_race(df):
                             x="race",
                             y="count",
                             hover_data=['count'],
-                            color_discrete_sequence =['#d1c21b','#d1c21b','#d1c21b','#d1c21b','#d1c21b','#d1c21b'],
+                            color_discrete_sequence =['#cfbe99','#cfbe99','#cfbe99','#cfbe99','#cfbe99','#cfbe99'],
                             width =1400, height=800,
                             )
     race_bar_chart.update_layout(showlegend=True,
@@ -238,8 +274,9 @@ def create_bar_chart_for_age_and_gender(df):
                             color='gender',
                             hover_data=['count'],
                             barmode = 'group',
-                            width=1400, height=800,
-                            color_discrete_map={'Male':'#153a8a','Female':'#bf680b'},
+                            width=1400,
+                            height=800,
+                            color_discrete_map={'Male':'#8c614f','Female':'#834f8c'},
                             category_orders ={'gender':['Male','Female']})
     bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#d1dade",
                                  paper_bgcolor='rgba(0,0,0,0)',
@@ -258,7 +295,7 @@ def create_bar_chart_for_age_and_gender(df):
 
 #Sankey Diagram
 def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
-    colorPalette = ['#d1c21b','#6dad23','#FFE873','#0a6194','#be584b','#db8746']
+    colorPalette = ['#cfbe99','#8c614f','#8c614f','#0a6194','#be584b','#db8746']
     labelList = []
     colorNumList = []
     for catCol in cat_cols:
@@ -290,7 +327,7 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
     sourceTargetDf['targetID'] = sourceTargetDf['target'].apply(lambda x: labelList.index(x))
 
     # creating the sankey diagram
-    fig = go.Figure(data=[go.Sankey(
+    sankey = go.Figure(data=[go.Sankey(
         node = dict(
           pad = 15,
           thickness = 24,
@@ -309,26 +346,26 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
         ),
 
     )])
-    fig.update_traces(customdata=['Race','Age','Gender','Threat Level','Fleeing'])
+    sankey.update_traces(customdata=['Race','Age','Gender','Threat Level','Fleeing'])
 
-    fig.update_layout(title_text='<b>Race\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+    sankey.update_layout(title_text='<b>Race\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
                                   Age \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
                                   Gender\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
                                   Signs of Mental Illness \t\t\t\t\t\t \
-                                  Threat Level\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Threat Level\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
                                   Fleeing<b>',
-                      title_pad=dict(t=0,l=0,b=60,r=0),
-                      width=4100,
-                      height=1000,
-                      plot_bgcolor="#d1dade",
-                      hoverlabel = dict(font=dict(size=30)),
-                      margin=dict(t=70,l=100,b=20,r=100),
-                      paper_bgcolor='rgba(0,0,0,0)',
-                      font_family="Proxima Nova",
-                      title_font_family="Proxima Nova",
-                      #font_color='#edf3f7',
-                      font_size=28)
-    return fig
+                         title_pad=dict(t=0,l=0,b=60,r=0),
+                         width=4100,
+                         height=1000,
+                         plot_bgcolor="#d1dade",
+                         hoverlabel = dict(font=dict(size=30)),
+                         margin=dict(t=70,l=100,b=20,r=100),
+                         paper_bgcolor='rgba(0,0,0,0)',
+                         font_family="Proxima Nova",
+                         title_font_family="Proxima Nova",
+                         #font_color='#edf3f7',
+                         font_size=28)
+    return sankey
 
 def create_sankey_diagram(df):
     df_grouped_sankey = df.groupby(['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'])['name'].agg('count').reset_index().rename(columns={'name':'count'})

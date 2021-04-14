@@ -419,7 +419,7 @@ html.Div([
                             'line-height': '1'}),
             dcc.Graph(
             id='radar-chart-weapons',
-            figure=create_pie_chart_for_weapons(df),
+            figure=create_bar_chart_for_weapons(df),
             )], style={'flex':'30%',
                         'border': 'solid white',
                         'border-color': 'white',
@@ -501,7 +501,17 @@ style={'display':'flex',
                         config={'doubleClick':'reset',
                                 'displayModeBar': False},
 
-                )], style={'flex':'100%',
+                ),
+                html.H3('Sankey Diagram',
+                        style={
+                                'textAlign' : 'center',
+                                'color': 'black',
+                                'font-family': 'Proxima Nova',
+                                'margin-top':'20px',
+                                'margin-bottom':'25px',
+                                'font-size': '38px','font-weight': 'bold',
+                                'line-height': '1'}),
+                ], style={'flex':'100%',
                             'border': 'solid white',
                             'border-color': 'white',
                             'border-width': '5px 5px 5px 0px',
@@ -509,7 +519,6 @@ style={'display':'flex',
                             'padding':'20px', 'background-color':'#c8d7e3'
                             }
                 , className='sankey-block'),
-
     ],
     className='sankey-weapon',
     style={'display':'flex',
@@ -790,7 +799,7 @@ def update_bar_chart_mental_illness(mapClick, mapDropdown, raceBarChartClick, li
 def update_radar_chart_weapons(mapClick, mapDropdown, raceBarChartClick, lineChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        return create_pie_chart_for_weapons(df)
+        return create_bar_chart_for_weapons(df)
     if viz_states['radar_chart_weapons']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
@@ -800,8 +809,8 @@ def update_radar_chart_weapons(mapClick, mapDropdown, raceBarChartClick, lineCha
         state = mapDropdown
         viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
-    radar_chart_for_weapons = create_pie_chart_for_weapons(filtered_df)
-    return radar_chart_for_weapons
+    bar_chart_for_weapons = create_bar_chart_for_weapons(filtered_df)
+    return bar_chart_for_weapons
 
 #update line chart for gun purchase
 @app.callback(
