@@ -32,7 +32,6 @@ html.Div([
                         'border':'none',
                         'padding': '15px 32px',
                         'border-radius': '25px',
-                        #'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
                         'display':'inline-block',
                         'width':'60%',
                         'height':'100px',
