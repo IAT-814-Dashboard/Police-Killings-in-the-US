@@ -17,7 +17,8 @@ gun_data = pd.read_csv('data/gun-data-by-year.csv')
 
 viz_states = {'bar_chart_race':0, 'choropleth_map':0, 'line_chart':0, \
               'bar_chart_age':0, 'bar_chart_mental':0, 'radar_chart_weapons':0, \
-              'gun_chart':0, 'bar_chart_threat':0, 'bar_chart_flee':0}
+              'gun_chart':0, 'bar_chart_threat':0, 'bar_chart_flee':0, \
+              'map_dropdown':0}
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -40,13 +41,13 @@ html.Div([
                         'font-weight':'bold',
                         'text-decoration': 'none',
                         'display': 'inline-block',
-                        'font-size': '40px'}), href='/'),
+                        'font-size': '40px'}), href='https://github.com/IAT-814-Dashboard/Police-Killings-in-the-US'),
     ],style={'flex':'10%'}),
 
     html.Div([
         html.H1(children='IAT 814',
                 style = {'textAlign' : 'center',
-                         'color': 'white',
+                         'color': 'black',
                          'font-family': 'Proxima Nova',
                          'margin-top':'40px',
                          'font-size': '50px',
@@ -205,7 +206,8 @@ html.Div([
                    style={'padding-top':'60px'}),
             html.Br(),
 
-            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'})
+            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'}),
+
         ], style={'float':'left','flex':'25%',
                   'text-align':'center',
                   'border-radius': '25px',
@@ -227,6 +229,33 @@ html.Div([
            'margin-right': '80px',
            }
     ),
+
+#map dropdown
+    html.Div([
+            html.Div(id='dummy1',
+                     style={'flex':'90%',
+                            'margin-right':'60px',
+                    }),
+            html.Div([
+                dcc.Dropdown(id='map-dropdown', options=get_country_list_for_dropdown(df),
+                            placeholder='Select a State',
+                            multi=True,
+                            style={'height':'90px',
+                                   'width':'500px',
+                                   'font-size':'40px',
+                                   #'border-radius': '25px',
+                                   'background-color':'#c8d7e3',
+                                   'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px'
+                            }),
+                ], style={'flex':'10%'}),
+    ],
+    className='dropwdown-bar',
+    style={'display':'flex',
+           'height':'20%',
+           'margin-top':'30px',
+           'margin-left': '80px',
+           'margin-right': '80px',
+    }),
 
 #gun purchase per year+ choropleth map
     html.Div([
@@ -264,11 +293,11 @@ html.Div([
                                 'margin-bottom':'25px',
                                 'font-size': '38px','font-weight': 'bold',
                                 'line-height': '1'}),
-                dcc.Loading(dcc.Graph(
+                dcc.Graph(
                         id='choropleth-map',
                         figure=create_choropleth_map(df),
                         config = {'displayModeBar': False}
-                ))], style={'flex':'40%',
+                )], style={'flex':'40%',
                             #'margin-right':'20px',
                             'border': 'solid white',
                             'border-color': 'white',
@@ -280,7 +309,6 @@ html.Div([
     ],
     className='year-state',
     style={'display':'flex',
-
            'height':'100%',
            'margin-top':'30px',
            'margin-left': '80px',
@@ -377,7 +405,7 @@ style={'display':'flex',
        }
 ),
 
-#weapon+threat level+flee
+#weapon+ threat level+ flee
 html.Div([
     html.Div([
             html.H3('Police Killings by Weapons',
@@ -503,7 +531,7 @@ style={'display':'flex',
 def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick):
     startDate=gunStartDate="01/01/2015"
     endDate=gunEndDate="01/01/2021"
-    state = df['state'].unique()
+    state = dropdown_value = df['state'].unique()
     race = df['race'].unique()
     gender = df['gender'].unique()
     age = df['age_bins'].unique()
@@ -548,7 +576,6 @@ def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, g
                          ]).reset_index()
     return filtered_df
 
-
 @app.callback(
     Output('reset-viz-states','children'),
     [Input('reset_button','n_clicks'),
@@ -561,23 +588,11 @@ def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, g
      Input('bar-chart-fleeing','clickData'),
      Input('mental-illness-bar', 'clickData')],prevent_initial_call=True)
 def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, threatBarClick, fleeBarClick, mentalBarClick, n_clicks):
+    global viz_states
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_race'] = 0
-        viz_states['choropleth_map'] = 0
-        viz_states['line_chart'] = 0
-        viz_states['bar_chart_age'] = 0
-        viz_states['bar_chart_mental'] = 0
-        viz_states['radar_chart_weapons']=0
-        viz_states['gun_chart'] = 0
-        viz_states['bar_chart_threat'] = 0
-        viz_states['bar_chart_flee'] = 0
-        return 0
+        viz_states = viz_states.fromkeys(viz_states, 0)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-    #if triggered_element=='line-chart':
-    #    viz_states['line_chart'] = 1
-    #if triggered_element=='gun-line-chart':
-    #    viz_states['gun_chart'] = 1
     if triggered_element=='choropleth-map':
         viz_states['choropleth_map'] = 1
     if triggered_element=='bar-chart-race':
@@ -592,11 +607,11 @@ def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, age
         viz_states['bar_chart_flee'] = 1
     return 0
 
-
 #update choropleth map
 @app.callback(
     Output('choropleth-map', 'figure'),
     [Input('bar-chart-race', 'clickData'),
+    Input('map-dropdown', 'value'),
     Input('bar-chart-age', 'clickData'),
     Input('line-chart','relayoutData'),
     Input('mental-illness-bar', 'clickData'),
@@ -604,15 +619,17 @@ def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, age
     Input('bar-chart-threat-level','clickData'),
     Input('bar-chart-fleeing','clickData'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_choropleth_map(raceBarChartClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['choropleth_map']=0
         return create_choropleth_map(df)
     if viz_states['choropleth_map']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(lineChartClick, gunClick, None, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     choropleth_map = create_choropleth_map(filtered_df)
     return choropleth_map
@@ -621,6 +638,7 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
 @app.callback(
     Output('bar-chart-race', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-age', 'clickData'),
      Input('line-chart','relayoutData'),
      Input('mental-illness-bar', 'clickData'),
@@ -628,15 +646,18 @@ def update_choropleth_map(raceBarChartClick, ageBarClick, lineChartClick, mental
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_bar_chart_race(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_race']=0
         return create_bar_chart_for_race(df)
     if viz_states['bar_chart_race']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(lineChartClick, gunClick, mapClick, None, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     bar_chart_race = create_bar_chart_for_race(filtered_df)
     return bar_chart_race
@@ -645,6 +666,7 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
 @app.callback(
     Output('bar-chart-threat-level', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-age', 'clickData'),
      Input('line-chart','relayoutData'),
      Input('mental-illness-bar', 'clickData'),
@@ -652,15 +674,18 @@ def update_bar_chart_race(mapClick, ageBarClick, lineChartClick, mentalBarClick,
      Input('bar-chart-fleeing','clickData'),
      Input('gun-line-chart', 'relayoutData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_threat_level(mapClick, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, fleeBarClick, gunClick, n_clicks):
+def update_bar_chart_threat_level(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, fleeBarClick, gunClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_threat']=0
         return create_bar_chart_for_threat_level(df)
     if viz_states['bar_chart_threat']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(lineChartClick, gunClick, mapClick, raceBarClick, ageBarClick, mentalBarClick, None, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     bar_chart_threat_level = create_bar_chart_for_threat_level(filtered_df)
     return bar_chart_threat_level
@@ -669,6 +694,7 @@ def update_bar_chart_threat_level(mapClick, ageBarClick, lineChartClick, mentalB
 @app.callback(
     Output('bar-chart-fleeing', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-age', 'clickData'),
      Input('line-chart','relayoutData'),
      Input('mental-illness-bar', 'clickData'),
@@ -676,25 +702,27 @@ def update_bar_chart_threat_level(mapClick, ageBarClick, lineChartClick, mentalB
      Input('bar-chart-threat-level','clickData'),
      Input('gun-line-chart', 'relayoutData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_fleeing(mapClick, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, threatBarClick, gunClick, n_clicks):
+def update_bar_chart_fleeing(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, threatBarClick, gunClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_flee']=0
         return create_bar_chart_for_fleeing(df)
     if viz_states['bar_chart_flee']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(lineChartClick, gunClick, mapClick, raceBarClick, ageBarClick, mentalBarClick, threatBarClick, None)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     bar_chart_fleeing = create_bar_chart_for_fleeing(filtered_df)
     return bar_chart_fleeing
-
-
 
 #update bar chart age and gender
 @app.callback(
     Output('bar-chart-age', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-race', 'clickData'),
      Input('line-chart','relayoutData'),
      Input('mental-illness-bar', 'clickData'),
@@ -702,15 +730,18 @@ def update_bar_chart_fleeing(mapClick, ageBarClick, lineChartClick, mentalBarCli
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_bar_chart_age_and_gender(mapClick, mapDropdown, raceBarChartClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_age']=0
         return create_bar_chart_for_age_and_gender(df)
     if viz_states['bar_chart_age']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, None, mentalBarClick, threatBarClick, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     bar_chart_by_age = create_bar_chart_for_age_and_gender(filtered_df)
     return bar_chart_by_age
@@ -719,6 +750,7 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
 @app.callback(
     Output('mental-illness-bar', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-race', 'clickData'),
      Input('line-chart','relayoutData'),
      Input('bar-chart-age', 'clickData'),
@@ -726,15 +758,18 @@ def update_bar_chart_age_and_gender(mapClick, raceBarChartClick, lineChartClick,
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick, ageBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_bar_chart_mental_illness(mapClick, mapDropdown, raceBarChartClick, lineChartClick, ageBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_mental']=0
         return create_bar_chart_for_mental_illness(df)
     if viz_states['bar_chart_mental']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                 get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, None, threatBarClick, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filtered_df)
     return bar_chart_by_mental_illness
@@ -743,6 +778,7 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
 @app.callback(
     Output('radar-chart-weapons', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-race', 'clickData'),
      Input('line-chart','relayoutData'),
      Input('bar-chart-age', 'clickData'),
@@ -751,19 +787,21 @@ def update_bar_chart_mental_illness(mapClick, raceBarChartClick, lineChartClick,
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_radar_chart_weapons(mapClick, raceBarChartClick, lineChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_radar_chart_weapons(mapClick, mapDropdown, raceBarChartClick, lineChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['radar_chart_weapons']=0
         return create_pie_chart_for_weapons(df)
     if viz_states['radar_chart_weapons']==1:
         return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                     get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     radar_chart_for_weapons = create_pie_chart_for_weapons(filtered_df)
     return radar_chart_for_weapons
-
 
 #update line chart for gun purchase
 @app.callback(
@@ -774,7 +812,6 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['gun_chart'] = 0
         return create_line_chart_gun_data(gun_data)
     if viz_states['gun_chart']==1:
         return dash.no_update
@@ -789,6 +826,7 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
 @app.callback(
     Output('line-chart', 'figure'),
     [Input('choropleth-map', 'clickData'),
+     Input('map-dropdown', 'value'),
      Input('bar-chart-race', 'clickData'),
      Input('bar-chart-age','clickData'),
      Input('mental-illness-bar', 'clickData'),
@@ -796,11 +834,9 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_line_chart(mapClick, raceBarChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['line_chart']=0
-        viz_states['gun_chart']=0
         return create_line_chart(df), create_line_chart_gun_data(gun_data)
     if viz_states['line_chart']==1:
         return dash.no_update
@@ -811,6 +847,9 @@ def update_line_chart(mapClick, raceBarChartClick, ageBarClick, mentalBarClick, 
         filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     else:
         filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     line_chart = create_line_chart(filtered_df)
     return line_chart
 
@@ -821,18 +860,22 @@ def update_line_chart(mapClick, raceBarChartClick, ageBarClick, mentalBarClick, 
     Input('bar-chart-age', 'clickData'),
     Input('line-chart','relayoutData'),
     Input('choropleth-map','clickData'),
+    Input('map-dropdown', 'value'),
     Input('mental-illness-bar','clickData'),
     Input('gun-line-chart', 'relayoutData'),
     Input('bar-chart-threat-level','clickData'),
     Input('bar-chart-fleeing','clickData'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
-        viz_states['bar_chart_age']=0
         return create_sankey_diagram(df)
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                     get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     sankey_diagram = create_sankey_diagram(filtered_df)
     return sankey_diagram
@@ -844,12 +887,13 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
      Input('bar-chart-race', 'clickData'),
      Input('bar-chart-age', 'clickData'),
      Input('choropleth-map','clickData'),
+     Input('map-dropdown', 'value'),
      Input('mental-illness-bar', 'clickData'),
      Input('gun-line-chart', 'relayoutData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('reset_button','n_clicks')])
-def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return len(df)
@@ -857,14 +901,18 @@ def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapCl
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
                     get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
+        state = mapDropdown
+        viz_states['map_dropdown'] = 1
     if triggered_element=='gun-line-chart':
         filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
     else:
         filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+
     return len(filtered_df)
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)

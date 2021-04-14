@@ -1,6 +1,16 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from assets.state_mapping import state_mapping
+
+def get_country_list_for_dropdown(df):
+    country_mapping = {}
+    list_of_countries = []
+    for key, value in state_mapping.items():
+        country_mapping['label'] = value
+        country_mapping['value'] = key
+        list_of_countries.append(country_mapping.copy())
+    return list_of_countries
 
 def get_age_and_gender(stackBarClick):
     gender_id = stackBarClick['points'][0]['curveNumber']
@@ -232,16 +242,16 @@ def create_bar_chart_for_age_and_gender(df):
                             color_discrete_map={'Male':'#153a8a','Female':'#bf680b'},
                             category_orders ={'gender':['Male','Female']})
     bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#d1dade",
-                              paper_bgcolor='rgba(0,0,0,0)',
-                              clickmode='event+select',
-                              margin=dict(t=50,l=200,b=0,r=40),
-                              xaxis_title='Age and Gender',
-                              yaxis_title='Number of Killings',
-                              font_family="Proxima Nova",
-                              hoverlabel = dict(font=dict(size=30)),
-                              title_font_family="Proxima Nova",
-                              font_size=30,
-                              xaxis_tickangle=-45)
+                                 paper_bgcolor='rgba(0,0,0,0)',
+                                 clickmode='event+select',
+                                 margin=dict(t=50,l=200,b=0,r=40),
+                                 xaxis_title='Age and Gender',
+                                 yaxis_title='Number of Killings',
+                                 font_family="Proxima Nova",
+                                 hoverlabel = dict(font=dict(size=30)),
+                                 title_font_family="Proxima Nova",
+                                 font_size=30,
+                                 xaxis_tickangle=-45)
     return bar_age_gender
 
 
@@ -324,7 +334,5 @@ def create_sankey_diagram(df):
     df_grouped_sankey = df.groupby(['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
     sankey_diagram = generateSankey(df_grouped_sankey,
                                    ['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'],
-                                   value_cols='count',
-                                   )
-
+                                   value_cols='count',)
     return sankey_diagram
