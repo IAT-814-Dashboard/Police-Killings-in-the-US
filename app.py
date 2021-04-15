@@ -608,6 +608,8 @@ def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, age
     if changed_id=='reset_button':
         viz_states = viz_states.fromkeys(viz_states, 0)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_element=='line-chart':
+        viz_states['line_chart'] = 1
     if triggered_element=='choropleth-map':
         viz_states['choropleth_map'] = 1
     if triggered_element=='bar-chart-race':
