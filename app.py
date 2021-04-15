@@ -30,8 +30,9 @@ html.Div([
 
     html.Div([
     html.A(html.Button('GITHUB', id='github_link', n_clicks=0,
-                style={'background-color': '#c8d7e3',
+                style={'background-color': '#1c2b3b',
                         'border':'none',
+                        'color': 'white',
                         'padding': '15px 32px',
                         'border-radius': '25px',
                         'display':'inline-block',
@@ -48,7 +49,7 @@ html.Div([
     html.Div([
         html.H1(children='IAT 814',
                 style = {'textAlign' : 'center',
-                         'color': 'black',
+                         'color': 'white',
                          'font-family': 'Proxima Nova',
                          'margin-top':'40px',
                          'font-size': '50px',
@@ -62,10 +63,11 @@ html.Div([
 
     html.Div([
     html.A(html.Button('PROJECT REPORT', id='report_button', n_clicks=0,
-                style={'background-color': '#c8d7e3',
+                style={'background-color': '#1c2b3b',
                         'border':'none',
                         'padding': '15px 32px',
-                        #'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                        #'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'color': 'white',
                         'border-radius': '25px',
                         'display':'inline-block',
                         'width':'400px',
@@ -108,11 +110,11 @@ html.Div([
         style = {'height' : '4%',
                 'display':'flex',
                 'border-radius': '25px',
-                #'border': 'solid black',
-                #'border-color': 'black',
-                #'border-width': ' 10px 10px 10px 10px',
-                'background-color' : '#4a90a1',
-                'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                #'border': 'solid white',
+                #'border-color': 'white',
+                #'border-width': ' -1px -1px 10px 10px',
+                'background-color' : '#22303c',
+                'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                 'margin-top': '25px',
                 'margin-left': '80px',
                 'margin-right': '80px',}
@@ -125,7 +127,7 @@ html.Div([
                 html.H3('Police Killings by Year',
                         style={
                                 'textAlign':'center',
-                                'color': 'black',
+                                'color': 'white',
                                 'font-family': 'Proxima Nova',
                                 'font-size': '38px',
                                 'margin-bottom':'10px',
@@ -138,12 +140,12 @@ html.Div([
                         config = {'displayModeBar': False}
                 )], style={'flex':'60%',
                             'margin-right':'20px',
-                            'border': 'solid white',
-                            'border-color': 'white',
-                            'border-width': ' 5px 5px 5px 5px',
-                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                            # 'border': 'solid white',
+                            # 'border-color': 'white',
+                            # 'border-width': ' 5px 5px 5px 5px',
+                            'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                             'padding':'20px',
-                            'background-color':'#c8d7e3'}
+                            'background-color':'#1c2b3b'}
                 , className='line-chart-block'),
 
         html.Div([
@@ -151,7 +153,7 @@ html.Div([
             html.H3(children= 'TOTAL NUMBER OF POLICE KILLINGS',#'Total Number of Police Killings',
                     style={
                             'textAlign':'center',
-                            'color': 'black',
+                            'color': 'white',
                             'font-family': 'Proxima Nova',
                             'font-size': '38px',
                             'margin-top':'20px',
@@ -163,30 +165,30 @@ html.Div([
             #         style={
             #                 'font_size':'70px'
             #         })
+           
             daq.LEDDisplay(
             id='indicator-graph',
             value=len(df),
-            backgroundColor="#c8d7e3",
-            color='black')
+            backgroundColor="#1c2b3b",
+            color='white')
             ], style={'flex':'25%',
                       'margin-bottom':'40px',
                       'padding-top':'50px',
                       'padding-bottom':'50px',
                       'border-radius': '25px',
-                      'background-color': '#c8d7e3',
+                      'background-color': '#1c2b3b',
                       'text-align':'center',
-                      'border': 'solid white',
-                      'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                      'border-color': 'white',
-                      'border-width': ' 5px 5px 5px 5px',
+                    #   'border': 'solid white',
+                      'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                    #   'border-color': 'white',
+                    #   'border-width': ' 5px 5px 5px 5px',
                       'padding':'20px'},),
 
             html.A(html.Button('RESET ALL', id='reset_button', n_clicks=0,
-                        style={'background-color': '#c8d7e3',
-                                'border':'none',
-                                'border-radius': '25px',
+                        style={'background-color': '#1c2b3b',
+                                # 'border-radius': '25px',
                                 'padding': '15px 32px',
-                                'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                                'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                                 'display':'inline-block',
                                 'width':'80%',
                                 'height':'150px',
@@ -194,6 +196,8 @@ html.Div([
                                 'margin-left':'70px',
                                 'font-weight':'bold',
                                 'margin-bottom':'50px',
+                                'color':'white',
+                                # 'border-color': 'white',
                                 'text-decoration': 'none',
                                 'display': 'inline-block',
                                 'font-size': '40px'}), href='/'),
@@ -209,22 +213,22 @@ html.Div([
             html.P('Police brutality is the use of excessive or unnecessary force by personnel affiliated with law enforcement duties when dealing with suspects and civilians.\
                    Police violence is a leading cause of death for young men in the United States.\
                    This dashboard can be used to explore the possible causes for Police Killings in the United States.',
-                   style={'padding-top':'60px'}),
+                   style={'padding-top':'60px', 'color':'white'}),
             html.Br(),
 
-            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px'}),
+            html.P(html.Strong(html.Center('ALL LIVES MATTER')),style={'font-size': '50px','color':'white' }),
 
         ], style={'float':'left','flex':'25%',
                   'text-align':'center',
                   'border-radius': '25px',
-                  'background-color':'#c8d7e3',
-                  'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                  'background-color':'#1c2b3b',
+                  'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                   'font-family': 'Proxima Nova',
                   'font-size': '40px',
                   'padding':'20px',
-                  'border': 'solid white',
-                  'border-color': 'white',
-                  'border-width': '5px 5px 5px 5px',
+                #   'border': 'solid white',
+                #   'border-color': 'white',
+                #   'border-width': '5px 5px 5px 5px',
                   }),
     ],
     className='information-bar',
@@ -250,8 +254,8 @@ html.Div([
                                    'width':'500px',
                                    'font-size':'40px',
                                    #'border-radius': '25px',
-                                   'background-color':'#c8d7e3',
-                                   'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px'
+                                   'background-color':'#1c2b3b',
+                                   'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px'
                             }),
                 ], style={'flex':'10%'}),
     ],
@@ -269,7 +273,7 @@ html.Div([
             html.H3('Purchase of Gun By Year',
                     style={
                             'textAlign':'center',
-                            'color': 'black',
+                            'color': 'white',
                             'font-family': 'Proxima Nova',
                             'font-size': '38px',
                             'margin-bottom':'10px',
@@ -282,11 +286,11 @@ html.Div([
 
             ),
         ], style={'flex':'60%',
-                    'background-color':'#c8d7e3',
-                    'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                    'border': 'solid white',
-                    'border-color': 'white',
-                    'border-width': ' 5px 5px 5px 5px',
+                    'background-color':'#1c2b3b',
+                    'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                    # 'border': 'solid white',
+                    # 'border-color': 'white',
+                    # 'border-width': ' 5px 5px 5px 5px',
                     'padding':'20px',
                     #'margin-left': '50px',
                     'margin-right': '20px',}),
@@ -294,7 +298,7 @@ html.Div([
                 html.H3('Police Killings by State',
                         style={
                                 'textAlign' : 'center',
-                                'color': 'black',
+                                'color': 'white',
                                 'font-family': 'Proxima Nova',
                                 'margin-bottom':'25px',
                                 'font-size': '38px','font-weight': 'bold',
@@ -305,11 +309,11 @@ html.Div([
                         config = {'displayModeBar': False}
                 )], style={'flex':'40%',
                             #'margin-right':'20px',
-                            'border': 'solid white',
-                            'border-color': 'white',
-                            'border-width': ' 5px 5px 5px 5px',
-                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                            'padding':'20px', 'padding-left':'30px','background-color':'#c8d7e3'}
+                            # 'border': 'solid white',
+                            # 'border-color': 'white',
+                            # 'border-width': ' 5px 5px 5px 5px',
+                            'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                            'padding':'20px', 'padding-left':'30px','background-color':'#1c2b3b'}
                 ,className='map-block'),
 
     ],
@@ -329,7 +333,7 @@ html.Div([
             html.H3('Police Killings by Race',
                     style={
                             'textAlign' : 'center',
-                            'color': 'black',
+                            'color': 'white',
                             'font-family': 'Proxima Nova',
                             'margin-bottom':'10px',
                             'font-size': '38px',
@@ -341,13 +345,13 @@ html.Div([
                     config={'doubleClick':'reset',
                             'displayModeBar': False},
             )], style={'flex':'34%',
-                        'border': 'solid white',
-                        'border-color': 'white',
-                        'border-width': '5px 5px 5px 5px',
-                        'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                        # 'border': 'solid white',
+                        # 'border-color': 'white',
+                        # 'border-width': '5px 5px 5px 5px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'margin-right':'40px',
                         'padding':'20px',
-                        'background-color':'#c8d7e3'
+                        'background-color':'#1c2b3b'
                         }
             , className='race-block'),
 
@@ -355,7 +359,7 @@ html.Div([
             html.H3('Police Killings by Age and Gender',
                     style={
                             'textAlign' : 'center',
-                            'color': 'black',
+                            'color': 'white',
                             'margin-bottom':'10px',
                             'font-size': '38px',
                             'font-family': 'Proxima Nova',
@@ -366,12 +370,12 @@ html.Div([
                     figure=create_bar_chart_for_age_and_gender(df),
                     config={'doubleClick':'reset', 'displayModeBar': False},
             )], style={'flex':'33%',
-                        'border': 'solid white',
-                        'border-color': 'white',
+                        # 'border': 'solid white',
+                        # 'border-color': 'white',
                         'margin-right':'40px',
-                        'border-width': '5px 5px 5px 0px',
-                        'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                        'padding':'20px', 'background-color':'#c8d7e3'
+                        # 'border-width': '5px 5px 5px 0px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'padding':'20px', 'background-color':'#1c2b3b'
                         }
             , className='age-block'),
 
@@ -379,7 +383,7 @@ html.Div([
             html.H3('Police Killings by Signs of Mental Illness',
                     style={
                             'textAlign' : 'center',
-                            'color': 'black',
+                            'color': 'white',
                             'margin-bottom':'10px',
                             'font-size': '38px',
                             'font-family': 'Proxima Nova',
@@ -392,11 +396,11 @@ html.Div([
                             'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
-                        'border': 'solid white',
-                        'border-color': 'white',
-                        'border-width': '5px 5px 5px 0px',
-                        'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                        'padding':'20px', 'background-color':'#c8d7e3'
+                        # 'border': 'solid white',
+                        # 'border-color': 'white',
+                        # 'border-width': '5px 5px 5px 0px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'padding':'20px', 'background-color':'#1c2b3b'
                         }
 
             , className='mental-block'),
@@ -417,7 +421,7 @@ html.Div([
             html.H3('Police Killings by Weapons',
                     style={
                             'textAlign' : 'center',
-                            'color': 'black',
+                            'color': 'white',
                             'margin-bottom':'10px',
                             'font-size': '38px',
                             'font-family': 'Proxima Nova',
@@ -427,20 +431,20 @@ html.Div([
             id='radar-chart-weapons',
             figure=create_bar_chart_for_weapons(df),
             )], style={'flex':'30%',
-                        'border': 'solid white',
-                        'border-color': 'white',
+                        # 'border': 'solid white',
+                        # 'border-color': 'white',
                         'margin-right':'40px',
-                        'border-width': ' 5px 5px 5px 5px',
-                        'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
+                        # 'border-width': ' 5px 5px 5px 5px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'padding':'20px',
-                        'background-color':'#c8d7e3'}
+                        'background-color':'#1c2b3b'}
             ,className='weapon-block'),
 
     html.Div([
             html.H3('Police Killings by Threat Level',
                     style={
                             'textAlign' : 'center',
-                            'color': 'black',
+                            'color': 'white',
                             'margin-bottom':'10px',
                             'font-size': '38px',
                             'font-family': 'Proxima Nova',
@@ -452,12 +456,12 @@ html.Div([
                     config={'doubleClick':'reset',
                             'displayModeBar': False},
             )], style={'flex':'33%',
-                        'border': 'solid white',
+                        # 'border': 'solid white',
                         'margin-right':'40px',
-                        'border-color': 'white',
-                        'border-width': '5px 5px 5px 0px',
-                        'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                        'padding':'20px', 'background-color':'#c8d7e3'
+                        # 'border-color': 'white',
+                        # 'border-width': '5px 5px 5px 0px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'padding':'20px', 'background-color':'#1c2b3b'
                         }
             , className='threat-level-block'),
 
@@ -465,7 +469,7 @@ html.Div([
             html.H3('Police Killings by Type of Fleeing',
                     style={
                             'textAlign' : 'center',
-                            'color': 'black',
+                            'color': 'white',
                             'margin-bottom':'10px',
                             'font-size': '38px',
                             'font-family': 'Proxima Nova',
@@ -478,11 +482,11 @@ html.Div([
                             'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
-                        'border': 'solid white',
-                        'border-color': 'white',
-                        'border-width': '5px 5px 5px 0px',
-                        'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                        'padding':'20px', 'background-color':'#c8d7e3'
+                        # 'border': 'solid white',
+                        # 'border-color': 'white',
+                        # 'border-width': '5px 5px 5px 0px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'padding':'20px', 'background-color':'#1c2b3b'
                         }
 
             , className='fleeing-block'),
@@ -511,18 +515,18 @@ style={'display':'flex',
                 html.H3('Sankey Diagram',
                         style={
                                 'textAlign' : 'center',
-                                'color': 'black',
+                                'color': 'white',
                                 'font-family': 'Proxima Nova',
                                 'margin-top':'20px',
                                 'margin-bottom':'25px',
                                 'font-size': '38px','font-weight': 'bold',
                                 'line-height': '1'}),
                 ], style={'flex':'100%',
-                            'border': 'solid white',
-                            'border-color': 'white',
-                            'border-width': '5px 5px 5px 0px',
-                            'box-shadow': 'rgb(38, 57, 77) 0px 20px 30px -10px',
-                            'padding':'20px', 'background-color':'#c8d7e3'
+                            # 'border': 'solid white',
+                            # 'border-color': 'white',
+                            # 'border-width': '5px 5px 5px 0px',
+                            'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                            'padding':'20px', 'background-color':'#1c2b3b'
                             }
                 , className='sankey-block'),
     ],
@@ -539,7 +543,7 @@ style={'display':'flex',
     html.Div(id='triggered_element', style={'display': 'none'}),
     html.Div(id='reset-viz-states', style={'display': 'none'})
 
-], style={})
+], style={'background-color':'#192734'})
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
