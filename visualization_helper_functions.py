@@ -55,7 +55,6 @@ def create_line_chart(df):
     line_chart = go.Figure(data=go.Scatter(x=df_group_by_date['date'],
                                            y=df_group_by_date['count'],
                                            mode='lines+markers',
-                                           #fill='tozeroy',
                                            line={'color':LINE_COLOR}))
     line_chart.update_xaxes(showspikes=True,
                             showgrid=False,
@@ -63,7 +62,6 @@ def create_line_chart(df):
                             spikesnap="cursor",
                             spikemode="across")
     line_chart.update_yaxes(showspikes=True,
-                            # showgrid=False,
                             spikecolor="orange",
                             spikethickness=2)
     line_chart.update_layout(showlegend=False,
@@ -92,7 +90,6 @@ def create_line_chart_gun_data(df_gun):
                                      spikesnap="cursor",
                                      spikemode="across")
     gun_data_line_chart.update_yaxes(showspikes=True,
-                                    #  showgrid=False,
                                      spikecolor="orange",
                                      spikethickness=2)
     gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#1c2b3b",
@@ -158,7 +155,6 @@ def create_bar_chart_for_weapons(df):
                              hoverlabel = dict(font=dict(size=30)),
                              font_size=35,
                              font_color=FONT_COLOR,
-                             #xaxis_tickangle=-45
                              )
 
     return weapon_bar
@@ -341,7 +337,6 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
                          font_family="Proxima Nova",
                          font_color='white',
                          title_font_family="Proxima Nova",
-                         #font_color='#edf3f7',
                          font_size=32)
     return sankey
 

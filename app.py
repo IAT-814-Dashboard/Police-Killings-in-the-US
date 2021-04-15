@@ -97,7 +97,7 @@ html.Div([
     html.Div([
 
         html.Div([
-            html.H1(children=  'POLICE KILLINGS IN THE UNITED STATES', #'Police Killings in the United States',
+            html.H1(children=  'POLICE KILLINGS IN THE UNITED STATES',
                     style = {'textAlign' : 'center',
                              'color': 'white',
                              'font-family': 'Roboto',
@@ -181,7 +181,6 @@ html.Div([
 
             html.A(html.Button('RESET ALL', id='reset_button', n_clicks=0,
                         style={'background-color': '#1c2b3b',
-                                # 'border-radius': '25px',
                                 'padding': '15px 32px',
                                 'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                                 'display':'inline-block',
@@ -244,7 +243,6 @@ html.Div([
                             style={'height':'90px',
                                    'width':'500px',
                                    'font-size':'40px',
-                                   #'border-radius': '25px',
                                    'background-color':'#1c2b3b',
                                    'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px'
                             }),
@@ -280,7 +278,6 @@ html.Div([
                     'background-color':'#1c2b3b',
                     'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                     'padding':'20px',
-                    #'margin-left': '50px',
                     'margin-right': '70px',}),
         html.Div([
                 html.H3('Police Killings by State',
