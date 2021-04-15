@@ -840,8 +840,6 @@ def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, men
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_line_chart(df), create_line_chart_gun_data(gun_data)
-    if viz_states['line_chart']==1:
-        return dash.no_update
     startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
                 get_viz_info(None, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
@@ -852,8 +850,9 @@ def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, men
         filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     else:
         filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
-
     line_chart = create_line_chart(filtered_df)
+    if viz_states['line_chart']==1 and triggered_element!='gun-line-chart':
+        return dash.no_update
     return line_chart
 
 #update sankey diagram
