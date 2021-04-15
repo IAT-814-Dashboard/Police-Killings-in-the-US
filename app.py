@@ -33,6 +33,7 @@ html.Div([
                 style={'background-color': '#1c2b3b',
                         'border':'none',
                         'color': 'white',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'padding': '15px 32px',
                         'border-radius': '25px',
                         'display':'inline-block',
@@ -66,7 +67,7 @@ html.Div([
                 style={'background-color': '#1c2b3b',
                         'border':'none',
                         'padding': '15px 32px',
-                        #'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'color': 'white',
                         'border-radius': '25px',
                         'display':'inline-block',
@@ -92,10 +93,10 @@ html.Div([
     html.Div([
 
         html.Div([
-            html.H1(children='Police Killings in the United States',
+            html.H1(children='POLICE KILLINGS IN THE UNITED STATES',
                     style = {'textAlign' : 'center',
                              'color': 'white',
-                             'font-family': 'Proxima Nova',
+                             'font-family': 'Open Sans',
                              'font-size': '50px',
                              #'font-weight': 'bold',
                              'letter-spacing': '-1px',

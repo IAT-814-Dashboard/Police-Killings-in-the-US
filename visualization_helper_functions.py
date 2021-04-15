@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from assets.state_mapping import state_mapping
 
 FONT_COLOR='white'
-LINE_COLOR='red'
+LINE_COLOR='#F34935'
 
 def get_country_list_for_dropdown(df):
     country_mapping = {}
@@ -38,7 +38,8 @@ def create_choropleth_map(df):
                                  clickmode='event+select',
                                  margin={"r":0,"t":0,"l":0,"b":0},
                                  hoverlabel = dict(font=dict(size=25)))
-    choropleth_map.update_layout(plot_bgcolor="#d1dade",
+    choropleth_map.update_layout(geo=dict(bgcolor= 'rgba(0,0,0,0)'),
+                                 plot_bgcolor="#1c2b3b",
                                  margin=dict(t=0,l=80,b=0,r=40),
                                  font_family="Proxima Nova",
                                  title_font_family="Proxima Nova",
@@ -57,16 +58,16 @@ def create_line_chart(df):
                                            #fill='tozeroy',
                                            line={'color':LINE_COLOR}))
     line_chart.update_xaxes(showspikes=True,
-                            # showgrid=True,
+                            showgrid=False,
                             spikecolor="green",
                             spikesnap="cursor",
                             spikemode="across")
     line_chart.update_yaxes(showspikes=True,
-                            # showgrid=True,
+                            # showgrid=False,
                             spikecolor="orange",
                             spikethickness=2)
     line_chart.update_layout(showlegend=False,
-                             plot_bgcolor="#d1dade",
+                             plot_bgcolor="#1c2b3b",
                              paper_bgcolor='rgba(0,0,0,0)',
                              margin=dict(t=0,l=80,b=0,r=40),
                              xaxis_title='Year', height=700, width=2600,
@@ -86,15 +87,15 @@ def create_line_chart_gun_data(df_gun):
                                                     mode='lines+markers',
                                                     line={'color':LINE_COLOR}))
     gun_data_line_chart.update_xaxes(showspikes=True,
-                                    #  showgrid=True,
+                                     showgrid=False,
                                      spikecolor="green",
                                      spikesnap="cursor",
                                      spikemode="across")
     gun_data_line_chart.update_yaxes(showspikes=True,
-                                    #  showgrid=True,
+                                    #  showgrid=False,
                                      spikecolor="orange",
                                      spikethickness=2)
-    gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
+    gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#1c2b3b",
                                       paper_bgcolor='rgba(0,0,0,0)',
                                       margin=dict(t=0,l=80,b=0,r=40),
                                       xaxis_title='Year',
@@ -121,7 +122,7 @@ def create_bar_chart_for_mental_illness(df):
     mental_illness_bar.update_layout(clickmode='event+select',
                                      paper_bgcolor='rgba(0,0,0,0)',
                                      showlegend=False,
-                                     plot_bgcolor="#d1dade",
+                                     plot_bgcolor="#1c2b3b",
                                      margin=dict(t=50,l=200,b=80,r=40),
                                      xaxis_title='Signs of Mental Illness',
                                      yaxis_title='Number of Killings',
@@ -169,7 +170,7 @@ def create_bar_chart_for_weapons(df):
     weapon_bar.update_layout(clickmode='event+select',
                              paper_bgcolor='rgba(0,0,0,0)',
                              showlegend=False,
-                             plot_bgcolor="#d1dade",
+                             plot_bgcolor="#1c2b3b",
                              margin=dict(t=50,l=200,b=80,r=40),
                              xaxis_title='Signs of Mental Illness',
                              yaxis_title='Number of Killings',
@@ -193,7 +194,7 @@ def create_bar_chart_for_weapons(df):
 #     pie_chart_weapons.update_layout(clickmode='event+select',
 #                               margin={"r":0,"t":0,"l":0,"b":0})
 #     pie_chart_weapons.update_layout(showlegend=True,
-#                                     plot_bgcolor="#d1dade",
+#                                     plot_bgcolor="#1c2b3b",
 #                                     width=1400,
 #                                     height=800,
 #                                     font_size=30,
@@ -216,7 +217,7 @@ def create_bar_chart_for_threat_level(df):
                                     height=800,
                                     color_discrete_sequence =['#be584b','#be584b','#be584b'])
     threat_level_bar_chart.update_layout(showlegend=True,
-                                         plot_bgcolor="#d1dade",
+                                         plot_bgcolor="#1c2b3b",
                                          clickmode='event+select',
                                          paper_bgcolor='rgba(0,0,0,0)',
                                          margin=dict(t=50,l=200,b=80,r=40),
@@ -241,7 +242,7 @@ def create_bar_chart_for_fleeing(df):
                                height=800,
                                color_discrete_sequence = ['#db8746','#db8746','#db8746','#db8746'])
     fleeing_bar_chart.update_layout(showlegend=True,
-                                    plot_bgcolor="#d1dade",
+                                    plot_bgcolor="#1c2b3b",
                                     clickmode='event+select',
                                     paper_bgcolor='rgba(0,0,0,0)',
                                     margin=dict(t=50,l=200,b=80,r=40),
@@ -268,7 +269,7 @@ def create_bar_chart_for_race(df):
                             )
 
     race_bar_chart.update_layout(showlegend=True,
-                                 plot_bgcolor="#d1dade",
+                                 plot_bgcolor="#1c2b3b",
                                  paper_bgcolor='rgba(0,0,0,0)',
                                  clickmode='event+select',
                                  margin=dict(t=50,l=200,b=80,r=40),
@@ -296,7 +297,7 @@ def create_bar_chart_for_age_and_gender(df):
                             height=800,
                             color_discrete_map={'Male':'#8c614f','Female':'#834f8c'},
                             category_orders ={'gender':['Male','Female']})
-    bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#d1dade",
+    bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#1c2b3b",
                                  paper_bgcolor='rgba(0,0,0,0)',
                                  clickmode='event+select',
                                  margin=dict(t=50,l=200,b=0,r=40),
@@ -376,7 +377,7 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
                          title_pad=dict(t=0,l=0,b=60,r=0),
                          width=4100,
                          height=1000,
-                         plot_bgcolor="#d1dade",
+                         plot_bgcolor="#1c2b3b",
                          hoverlabel = dict(font=dict(size=30)),
                          margin=dict(t=70,l=100,b=20,r=100),
                          paper_bgcolor='rgba(0,0,0,0)',
