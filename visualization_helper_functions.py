@@ -144,8 +144,8 @@ def create_radar_chart_for_weapons(df):
 
 def create_bar_chart_for_weapons(df):
     df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-    if df_group_by_weapon['count'].max() >10:
-        df_group_by_weapon = df_group_by_weapon[df_group_by_weapon['count']>10]
+    # if df_group_by_weapon['count'].max() >10:
+    #     df_group_by_weapon = df_group_by_weapon[df_group_by_weapon['count']>10]
     weapon_bar = px.bar(df_group_by_weapon,
                         y="armed",
                         x="count",
