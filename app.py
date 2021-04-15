@@ -514,7 +514,7 @@ style={'display':'flex',
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick):
+def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick):
     startDate=gunStartDate="01/01/2015"
     endDate=gunEndDate="01/01/2021"
     state = dropdown_value = df['state'].unique()
@@ -524,6 +524,7 @@ def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarCl
     mental_illness_value = df['signs_of_mental_illness'].unique()
     threat_value = df['threat_level'].unique()
     flee_value = df['flee'].unique()
+    arms_value = df['armed'].unique()
     if lineChartClick is not None:
         startDate = lineChartClick['xaxis.range[0]']
         endDate = lineChartClick['xaxis.range[1]']
@@ -544,9 +545,11 @@ def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarCl
         threat_value = [threatBarClick['points'][0]['x']]
     if fleeBarClick is not None:
         flee_value = [fleeBarClick['points'][0]['x']]
-    return startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value
+    if armClick is not None:
+        arms_value = [armClick['points'][0]['y']]
+    return startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value
 
-def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value):
+def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value):
     filtered_df = pd.DataFrame(
     df[['name','state', 'race','date','signs_of_mental_illness','age_bins','gender','threat_level','flee','armed']][
                          (df['date']>=startDate) &
@@ -558,7 +561,8 @@ def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, g
                          (df['signs_of_mental_illness'].isin(mental_illness_value)) &
                          (df['race'].isin(race)) &
                          (df['threat_level'].isin(threat_value)) &
-                         (df['flee']).isin(flee_value)
+                         (df['flee']).isin(flee_value) &
+                         (df['armed']).isin(arms_value)
                          ]).reset_index()
     return filtered_df
 
@@ -572,8 +576,9 @@ def get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, g
      Input('bar-chart-age', 'clickData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
+     Input('radar-chart-weapons','clickData'),
      Input('mental-illness-bar', 'clickData')],prevent_initial_call=True)
-def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, threatBarClick, fleeBarClick, mentalBarClick, n_clicks):
+def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, threatBarClick, fleeBarClick, mentalBarClick, armClick, n_clicks):
     global viz_states
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
@@ -593,6 +598,8 @@ def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, age
         viz_states['bar_chart_threat'] = 1
     if triggered_element=='bar-chart-fleeing':
         viz_states['bar_chart_flee'] = 1
+    if triggered_element=='radar-chart-weapons':
+        viz_states['radar_chart_weapons'] = 1
     return 0
 
 #update choropleth map
@@ -606,19 +613,20 @@ def update_viz_states(lineChartClick, gunClick, mapClick, raceBarChartClick, age
     Input('gun-line-chart', 'relayoutData'),
     Input('bar-chart-threat-level','clickData'),
     Input('bar-chart-fleeing','clickData'),
+    Input('radar-chart-weapons','clickData'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_choropleth_map(raceBarChartClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_choropleth_map(raceBarChartClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_choropleth_map(df)
     if viz_states['choropleth_map']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, gunClick, None, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, gunClick, None, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     choropleth_map = create_choropleth_map(filtered_df)
     return choropleth_map
 
@@ -633,20 +641,21 @@ def update_choropleth_map(raceBarChartClick, mapDropdown, ageBarClick, lineChart
      Input('gun-line-chart', 'relayoutData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_race(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_bar_chart_race(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_bar_chart_for_race(df)
     if viz_states['bar_chart_race']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, gunClick, mapClick, None, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, None, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     bar_chart_race = create_bar_chart_for_race(filtered_df)
     return bar_chart_race
 
@@ -661,20 +670,21 @@ def update_bar_chart_race(mapClick, mapDropdown, ageBarClick, lineChartClick, me
      Input('bar-chart-race','clickData'),
      Input('bar-chart-fleeing','clickData'),
      Input('gun-line-chart', 'relayoutData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_threat_level(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, fleeBarClick, gunClick, n_clicks):
+def update_bar_chart_threat_level(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, fleeBarClick, gunClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_bar_chart_for_threat_level(df)
     if viz_states['bar_chart_threat']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, gunClick, mapClick, raceBarClick, ageBarClick, mentalBarClick, None, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, raceBarClick, ageBarClick, mentalBarClick, None, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     bar_chart_threat_level = create_bar_chart_for_threat_level(filtered_df)
     return bar_chart_threat_level
 
@@ -689,20 +699,21 @@ def update_bar_chart_threat_level(mapClick, mapDropdown, ageBarClick, lineChartC
      Input('bar-chart-race','clickData'),
      Input('bar-chart-threat-level','clickData'),
      Input('gun-line-chart', 'relayoutData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_fleeing(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, threatBarClick, gunClick, n_clicks):
+def update_bar_chart_fleeing(mapClick, mapDropdown, ageBarClick, lineChartClick, mentalBarClick, raceBarClick, threatBarClick, gunClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_bar_chart_for_fleeing(df)
     if viz_states['bar_chart_flee']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, gunClick, mapClick, raceBarClick, ageBarClick, mentalBarClick, threatBarClick, None)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, raceBarClick, ageBarClick, mentalBarClick, threatBarClick, None, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     bar_chart_fleeing = create_bar_chart_for_fleeing(filtered_df)
     return bar_chart_fleeing
 
@@ -717,20 +728,21 @@ def update_bar_chart_fleeing(mapClick, mapDropdown, ageBarClick, lineChartClick,
      Input('gun-line-chart', 'relayoutData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_age_and_gender(mapClick, mapDropdown, raceBarChartClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_bar_chart_age_and_gender(mapClick, mapDropdown, raceBarChartClick, lineChartClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_bar_chart_for_age_and_gender(df)
     if viz_states['bar_chart_age']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, None, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, None, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     bar_chart_by_age = create_bar_chart_for_age_and_gender(filtered_df)
     return bar_chart_by_age
 
@@ -745,20 +757,21 @@ def update_bar_chart_age_and_gender(mapClick, mapDropdown, raceBarChartClick, li
      Input('gun-line-chart', 'relayoutData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_bar_chart_mental_illness(mapClick, mapDropdown, raceBarChartClick, lineChartClick, ageBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_bar_chart_mental_illness(mapClick, mapDropdown, raceBarChartClick, lineChartClick, ageBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_bar_chart_for_mental_illness(df)
     if viz_states['bar_chart_mental']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, None, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, None, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     bar_chart_by_mental_illness = create_bar_chart_for_mental_illness(filtered_df)
     return bar_chart_by_mental_illness
 
@@ -781,13 +794,13 @@ def update_radar_chart_weapons(mapClick, mapDropdown, raceBarChartClick, lineCha
         return create_bar_chart_for_weapons(df)
     if viz_states['radar_chart_weapons']==1:
         return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, None)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     bar_chart_for_weapons = create_bar_chart_for_weapons(filtered_df)
     return bar_chart_for_weapons
 
@@ -804,8 +817,8 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
     if viz_states['gun_chart']==1:
         return dash.no_update
 
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(lineChartClick, None, None, None, None, None, None, None)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(lineChartClick, None, None, None, None, None, None, None, None)
     filter_gun_data_by_date = gun_data[(gun_data['date']>=startDate) & (gun_data['date']<=endDate)]
     gun_data_line_chart = create_line_chart_gun_data(filter_gun_data_by_date)
     return gun_data_line_chart
@@ -821,25 +834,25 @@ def update_gun_data_line_chart(lineChartClick, n_clicks):
      Input('gun-line-chart', 'relayoutData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_line_chart(df), create_line_chart_gun_data(gun_data)
-    if viz_states['line_chart']==1:
-        return dash.no_update
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                get_viz_info(None, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                get_viz_info(None, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
     if triggered_element=='gun-line-chart':
-        filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+        filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     else:
-        filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
-
+        filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     line_chart = create_line_chart(filtered_df)
+    if viz_states['line_chart']==1 and triggered_element!='gun-line-chart':
+        return dash.no_update
     return line_chart
 
 #update sankey diagram
@@ -854,18 +867,19 @@ def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, men
     Input('gun-line-chart', 'relayoutData'),
     Input('bar-chart-threat-level','clickData'),
     Input('bar-chart-fleeing','clickData'),
+    Input('radar-chart-weapons','clickData'),
     Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_sankey_diagram(df)
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
-    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+    filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     sankey_diagram = create_sankey_diagram(filtered_df)
     return sankey_diagram
 
@@ -881,22 +895,23 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
      Input('gun-line-chart', 'relayoutData'),
      Input('bar-chart-threat-level','clickData'),
      Input('bar-chart-fleeing','clickData'),
+     Input('radar-chart-weapons','clickData'),
      Input('reset_button','n_clicks')])
-def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, n_clicks):
+def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return len(df)
 
-    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value = \
-                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick)
+    startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value = \
+                    get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick, armClick)
     triggered_element = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if triggered_element=='map-dropdown' or viz_states['map_dropdown']==1:
         state = mapDropdown
         viz_states['map_dropdown'] = 1
     if triggered_element=='gun-line-chart':
-        filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+        filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     else:
-        filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value)
+        filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
 
     return len(filtered_df)
 
