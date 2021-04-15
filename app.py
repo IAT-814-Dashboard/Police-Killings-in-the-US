@@ -46,7 +46,8 @@ html.Div([
                         'font-weight':'bold',
                         'text-decoration': 'none',
                         'display': 'inline-block',
-                        'font-size': '40px'}), href='https://github.com/IAT-814-Dashboard/Police-Killings-in-the-US'),
+                        'font-size': '40px'}),
+         href='https://github.com/IAT-814-Dashboard/Police-Killings-in-the-US'),
     ],style={'flex':'10%'}),
 
     html.Div([
@@ -61,8 +62,7 @@ html.Div([
                          'line-height': '1' }
         )],
         className='title',
-        style = {
-                 'flex':'80%'}),
+        style = {'flex':'80%'}),
 
     html.Div([
     html.A(html.Button('PROJECT REPORT', id='report_button', n_clicks=0,
@@ -97,7 +97,7 @@ html.Div([
     html.Div([
 
         html.Div([
-            html.H1(children=  'POLICE KILLINGS IN THE UNITED STATES',
+            html.H1(children='POLICE KILLINGS IN THE UNITED STATES',
                     style = {'textAlign' : 'center',
                              'color': 'white',
                              'font-family': 'Roboto',
@@ -403,6 +403,7 @@ html.Div([
             dcc.Graph(
             id='radar-chart-weapons',
             figure=create_bar_chart_for_weapons(df),
+            config={'displayModeBar':False}
             )], style={'flex':'30%',
                         'margin-right':'60px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
@@ -516,7 +517,7 @@ style={'display':'flex',
 
 def get_viz_info(lineChartClick, gunClick, mapClick, raceBarChartClick, ageBarClick, mentalBarClick, threatBarClick, fleeBarClick):
     startDate=gunStartDate="01/01/2015"
-    endDate=gunEndDate="01/01/2021"
+    endDate=gunEndDate="03/01/2020"
     state = dropdown_value = df['state'].unique()
     race = df['race'].unique()
     gender = df['gender'].unique()
