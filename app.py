@@ -28,17 +28,20 @@ app.layout = html.Div([
 
 html.Div([
 
+    #html.Div([])
     html.Div([
     html.A(html.Button('GITHUB', id='github_link', n_clicks=0,
                 style={'background-color': '#1c2b3b',
                         'border':'none',
                         'color': 'white',
+                        'box-shadow': 'rgba(255, 255, 255, 0.05) -1px -1px 10px 10px',
                         'padding': '15px 32px',
                         'border-radius': '25px',
                         'display':'inline-block',
                         'width':'60%',
                         'height':'100px',
                         'text-align': 'center',
+                        'margin-top':'5px',
                         'margin-left':'35px',
                         'font-weight':'bold',
                         'text-decoration': 'none',
@@ -66,7 +69,7 @@ html.Div([
                 style={'background-color': '#1c2b3b',
                         'border':'none',
                         'padding': '15px 32px',
-                        #'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
+                        'box-shadow': 'rgba(255, 255, 255, 0.05) -1px -1px 10px 10px',
                         'color': 'white',
                         'border-radius': '25px',
                         'display':'inline-block',
@@ -74,6 +77,7 @@ html.Div([
                         'height':'100px',
                         'text-align': 'center',
                         'margin-left':'70px',
+                        'margin-top':'5px',
                         'font-weight':'bold',
                         'text-decoration': 'none',
                         'display': 'inline-block',
@@ -83,7 +87,8 @@ html.Div([
     className = 'heading-row',
     style = {'height' : '4%',
             'display':'flex',
-            'margin-top': '15px',
+            'padding-top':'30px',
+            'padding-top':'15px',
             'margin-left': '50px',
             'margin-right': '80px',}
 ),
@@ -92,13 +97,13 @@ html.Div([
     html.Div([
 
         html.Div([
-            html.H1(children='Police Killings in the United States',
+            html.H1(children=  'POLICE KILLINGS IN THE UNITED STATES', #'Police Killings in the United States',
                     style = {'textAlign' : 'center',
                              'color': 'white',
-                             'font-family': 'Proxima Nova',
+                             'font-family': 'Roboto',
                              'font-size': '50px',
-                             #'font-weight': 'bold',
                              'letter-spacing': '-1px',
+                             'font-weight':'bold',
                              'line-height': '1' }
             )],
             className='title',
@@ -110,12 +115,11 @@ html.Div([
         style = {'height' : '4%',
                 'display':'flex',
                 'border-radius': '25px',
-                #'border': 'solid white',
-                #'border-color': 'white',
-                #'border-width': ' -1px -1px 10px 10px',
+                'margin-top': '90px',
                 'background-color' : '#22303c',
                 'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                 'margin-top': '25px',
+                'margin-bottom':'40px',
                 'margin-left': '80px',
                 'margin-right': '80px',}
     ),
@@ -129,7 +133,7 @@ html.Div([
                                 'textAlign':'center',
                                 'color': 'white',
                                 'font-family': 'Proxima Nova',
-                                'font-size': '38px',
+                                'font-size': '42px',
                                 'margin-bottom':'10px',
                                 'font-weight': 'bold',
                                 'line-height': '1',
@@ -140,9 +144,7 @@ html.Div([
                         config = {'displayModeBar': False}
                 )], style={'flex':'60%',
                             'margin-right':'20px',
-                            # 'border': 'solid white',
-                            # 'border-color': 'white',
-                            # 'border-width': ' 5px 5px 5px 5px',
+                            'margin-top':'40px',
                             'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                             'padding':'20px',
                             'background-color':'#1c2b3b'}
@@ -150,27 +152,23 @@ html.Div([
 
         html.Div([
             html.Div([
-            html.H3(children= 'TOTAL NUMBER OF POLICE KILLINGS',#'Total Number of Police Killings',
+            html.H3(children= 'TOTAL NUMBER OF POLICE KILLINGS',
                     style={
                             'textAlign':'center',
                             'color': 'white',
                             'font-family': 'Proxima Nova',
                             'font-size': '38px',
-                            'margin-top':'20px',
+                            'margin-top':'30px',
                             'margin-bottom':'30px',
                             'font-weight': 'bold',
                             'line-height': '1',
                             }),
-            # html.H1(id='indicator-graph',
-            #         style={
-            #                 'font_size':'70px'
-            #         })
-           
-            daq.LEDDisplay(
-            id='indicator-graph',
-            value=len(df),
-            backgroundColor="#1c2b3b",
-            color='white')
+
+            html.H1(id='indicator-graph',
+                    style={
+                            'font_size':'70px',
+                            'color':'white'
+                    }),
             ], style={'flex':'25%',
                       'margin-bottom':'40px',
                       'padding-top':'50px',
@@ -178,10 +176,7 @@ html.Div([
                       'border-radius': '25px',
                       'background-color': '#1c2b3b',
                       'text-align':'center',
-                    #   'border': 'solid white',
                       'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
-                    #   'border-color': 'white',
-                    #   'border-width': ' 5px 5px 5px 5px',
                       'padding':'20px'},),
 
             html.A(html.Button('RESET ALL', id='reset_button', n_clicks=0,
@@ -195,16 +190,14 @@ html.Div([
                                 'text-align': 'center',
                                 'margin-left':'70px',
                                 'font-weight':'bold',
-                                'margin-bottom':'50px',
+                                'margin-bottom':'60px',
                                 'color':'white',
-                                # 'border-color': 'white',
                                 'text-decoration': 'none',
                                 'display': 'inline-block',
                                 'font-size': '40px'}), href='/'),
-            html.Img(src='https://i.etsystatic.com/17857814/r/il/267c7e/1832681232/il_570xN.1832681232_lcsc.jpg',width='500px', height='350px',
-                     style={'margin-left':'200px',
-                            'mix-blend-mode':'multiply',
-                            'margin-right':'40px'}),
+            html.Img(src='https://www.pngkit.com/png/full/24-241928_m14-white-guns-for-logo.png',width='500px', height='350px',
+                     style={'margin-left':'150px',
+                            'margin-right':'70px'}),
             ],
             style={'flex':'25%',
                    'padding':'20px'}),
@@ -221,14 +214,12 @@ html.Div([
         ], style={'float':'left','flex':'25%',
                   'text-align':'center',
                   'border-radius': '25px',
+                  'margin-left':'40px',
                   'background-color':'#1c2b3b',
                   'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                   'font-family': 'Proxima Nova',
                   'font-size': '40px',
                   'padding':'20px',
-                #   'border': 'solid white',
-                #   'border-color': 'white',
-                #   'border-width': '5px 5px 5px 5px',
                   }),
     ],
     className='information-bar',
@@ -262,7 +253,7 @@ html.Div([
     className='dropwdown-bar',
     style={'display':'flex',
            'height':'20%',
-           'margin-top':'30px',
+           'margin-top':'50px',
            'margin-left': '80px',
            'margin-right': '80px',
     }),
@@ -275,7 +266,7 @@ html.Div([
                             'textAlign':'center',
                             'color': 'white',
                             'font-family': 'Proxima Nova',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'margin-bottom':'10px',
                             'font-weight': 'bold',
                             'line-height': '1'}),
@@ -288,12 +279,9 @@ html.Div([
         ], style={'flex':'60%',
                     'background-color':'#1c2b3b',
                     'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
-                    # 'border': 'solid white',
-                    # 'border-color': 'white',
-                    # 'border-width': ' 5px 5px 5px 5px',
                     'padding':'20px',
                     #'margin-left': '50px',
-                    'margin-right': '20px',}),
+                    'margin-right': '70px',}),
         html.Div([
                 html.H3('Police Killings by State',
                         style={
@@ -301,17 +289,13 @@ html.Div([
                                 'color': 'white',
                                 'font-family': 'Proxima Nova',
                                 'margin-bottom':'25px',
-                                'font-size': '38px','font-weight': 'bold',
+                                'font-size': '42px','font-weight': 'bold',
                                 'line-height': '1'}),
                 dcc.Graph(
                         id='choropleth-map',
                         figure=create_choropleth_map(df),
                         config = {'displayModeBar': False}
                 )], style={'flex':'40%',
-                            #'margin-right':'20px',
-                            # 'border': 'solid white',
-                            # 'border-color': 'white',
-                            # 'border-width': ' 5px 5px 5px 5px',
                             'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                             'padding':'20px', 'padding-left':'30px','background-color':'#1c2b3b'}
                 ,className='map-block'),
@@ -336,7 +320,7 @@ html.Div([
                             'color': 'white',
                             'font-family': 'Proxima Nova',
                             'margin-bottom':'10px',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'font-weight': 'bold',
                             'line-height': '1'}),
             dcc.Graph(
@@ -345,11 +329,8 @@ html.Div([
                     config={'doubleClick':'reset',
                             'displayModeBar': False},
             )], style={'flex':'34%',
-                        # 'border': 'solid white',
-                        # 'border-color': 'white',
-                        # 'border-width': '5px 5px 5px 5px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
-                        'margin-right':'40px',
+                        'margin-right':'60px',
                         'padding':'20px',
                         'background-color':'#1c2b3b'
                         }
@@ -361,7 +342,7 @@ html.Div([
                             'textAlign' : 'center',
                             'color': 'white',
                             'margin-bottom':'10px',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
@@ -370,10 +351,7 @@ html.Div([
                     figure=create_bar_chart_for_age_and_gender(df),
                     config={'doubleClick':'reset', 'displayModeBar': False},
             )], style={'flex':'33%',
-                        # 'border': 'solid white',
-                        # 'border-color': 'white',
-                        'margin-right':'40px',
-                        # 'border-width': '5px 5px 5px 0px',
+                        'margin-right':'60px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'padding':'20px', 'background-color':'#1c2b3b'
                         }
@@ -385,7 +363,7 @@ html.Div([
                             'textAlign' : 'center',
                             'color': 'white',
                             'margin-bottom':'10px',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
@@ -396,11 +374,9 @@ html.Div([
                             'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
-                        # 'border': 'solid white',
-                        # 'border-color': 'white',
-                        # 'border-width': '5px 5px 5px 0px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
-                        'padding':'20px', 'background-color':'#1c2b3b'
+                        'padding':'20px',
+                        'background-color':'#1c2b3b'
                         }
 
             , className='mental-block'),
@@ -409,13 +385,13 @@ html.Div([
 className='bar-chart-block',
 style={'display':'flex',
        'height':'100%',
-       'margin-top':'30px',
+       'margin-top':'60px',
        'margin-left': '80px',
-       'margin-right': '80px',
+       'margin-right': '75px',
        }
 ),
 
-#weapon+ threat level+ flee
+#weapon + threat level + flee
 html.Div([
     html.Div([
             html.H3('Police Killings by Weapons',
@@ -423,7 +399,7 @@ html.Div([
                             'textAlign' : 'center',
                             'color': 'white',
                             'margin-bottom':'10px',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
@@ -431,10 +407,7 @@ html.Div([
             id='radar-chart-weapons',
             figure=create_bar_chart_for_weapons(df),
             )], style={'flex':'30%',
-                        # 'border': 'solid white',
-                        # 'border-color': 'white',
-                        'margin-right':'40px',
-                        # 'border-width': ' 5px 5px 5px 5px',
+                        'margin-right':'60px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'padding':'20px',
                         'background-color':'#1c2b3b'}
@@ -446,7 +419,7 @@ html.Div([
                             'textAlign' : 'center',
                             'color': 'white',
                             'margin-bottom':'10px',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
@@ -456,10 +429,7 @@ html.Div([
                     config={'doubleClick':'reset',
                             'displayModeBar': False},
             )], style={'flex':'33%',
-                        # 'border': 'solid white',
-                        'margin-right':'40px',
-                        # 'border-color': 'white',
-                        # 'border-width': '5px 5px 5px 0px',
+                        'margin-right':'60px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'padding':'20px', 'background-color':'#1c2b3b'
                         }
@@ -471,7 +441,7 @@ html.Div([
                             'textAlign' : 'center',
                             'color': 'white',
                             'margin-bottom':'10px',
-                            'font-size': '38px',
+                            'font-size': '42px',
                             'font-family': 'Proxima Nova',
                             'font-weight': 'bold',
                             'line-height': '1'}),
@@ -482,9 +452,6 @@ html.Div([
                             'displayModeBar': False},
             )], style={'flex':'34%',
                         'padding-left':'50px',
-                        # 'border': 'solid white',
-                        # 'border-color': 'white',
-                        # 'border-width': '5px 5px 5px 0px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                         'padding':'20px', 'background-color':'#1c2b3b'
                         }
@@ -495,7 +462,7 @@ html.Div([
 className='bar-chart-block-2',
 style={'display':'flex',
        'height':'100%',
-       'margin-top':'30px',
+       'margin-top':'60px',
        'margin-left': '80px',
        'margin-right': '80px',
        }
@@ -507,7 +474,9 @@ style={'display':'flex',
                 dcc.Graph(
                         id='sankey-diagram',
                         figure=create_sankey_diagram(df),
-                        style={'margin-left':'50px', 'margin-right':'50px'},
+                        style={'margin-left':'50px',
+                               'font-color':'white',
+                               'margin-right':'50px'},
                         config={'doubleClick':'reset',
                                 'displayModeBar': False},
 
@@ -519,12 +488,10 @@ style={'display':'flex',
                                 'font-family': 'Proxima Nova',
                                 'margin-top':'20px',
                                 'margin-bottom':'25px',
-                                'font-size': '38px','font-weight': 'bold',
+                                'font-size': '42px',
+                                'font-weight': 'bold',
                                 'line-height': '1'}),
                 ], style={'flex':'100%',
-                            # 'border': 'solid white',
-                            # 'border-color': 'white',
-                            # 'border-width': '5px 5px 5px 0px',
                             'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
                             'padding':'20px', 'background-color':'#1c2b3b'
                             }
@@ -533,17 +500,20 @@ style={'display':'flex',
     className='sankey-weapon',
     style={'display':'flex',
            'height':'100%',
-           'margin-top':'30px',
+           'margin-top':'70px',
            'margin-left': '80px',
            'margin-right': '80px',
-           'margin-bottom':'40px'}
+           'padding-bottom':'60px',}
     ),
 
 #intermediate values
     html.Div(id='triggered_element', style={'display': 'none'}),
     html.Div(id='reset-viz-states', style={'display': 'none'})
 
-], style={'background-color':'#192734'})
+], style={'background-color':'#192734',
+          #'background-image': 'url("assets/sample2.jpg")',
+          }
+)
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -904,7 +874,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
 
 #update indicator graph
 @app.callback(
-    Output('indicator-graph','value'),
+    Output('indicator-graph','children'),
     [Input('line-chart','relayoutData'),
      Input('bar-chart-race', 'clickData'),
      Input('bar-chart-age', 'clickData'),

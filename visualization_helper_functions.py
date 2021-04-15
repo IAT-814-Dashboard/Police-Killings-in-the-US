@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from assets.state_mapping import state_mapping
 
 FONT_COLOR='white'
-LINE_COLOR='red'
+LINE_COLOR='#FEE699'
 
 def get_country_list_for_dropdown(df):
     country_mapping = {}
@@ -30,7 +30,7 @@ def create_choropleth_map(df):
     choropleth_map = go.Figure(data=go.Choropleth(locations = df_group_by_state['state'],
                                                   z = df_group_by_state['count'],
                                                   locationmode = 'USA-states',
-                                                  colorscale = 'Reds',
+                                                  colorscale = 'YlOrRd',
                                                   colorbar_title = "Number of Deaths"))
     choropleth_map.update_layout(width=1600,
                                  height=700,
@@ -38,11 +38,12 @@ def create_choropleth_map(df):
                                  clickmode='event+select',
                                  margin={"r":0,"t":0,"l":0,"b":0},
                                  hoverlabel = dict(font=dict(size=25)))
-    choropleth_map.update_layout(plot_bgcolor="#d1dade",
+    choropleth_map.update_layout(geo=dict(bgcolor= 'rgba(0,0,0,0)'),
+                                 plot_bgcolor="#1c2b3b",
                                  margin=dict(t=0,l=80,b=0,r=40),
                                  font_family="Proxima Nova",
                                  title_font_family="Proxima Nova",
-                                 font_size=30,
+                                 font_size=35,
                                  font_color=FONT_COLOR,
                                  dragmode=False,
                                  paper_bgcolor='rgba(0,0,0,0)',
@@ -57,16 +58,16 @@ def create_line_chart(df):
                                            #fill='tozeroy',
                                            line={'color':LINE_COLOR}))
     line_chart.update_xaxes(showspikes=True,
-                            # showgrid=True,
+                            showgrid=False,
                             spikecolor="green",
                             spikesnap="cursor",
                             spikemode="across")
     line_chart.update_yaxes(showspikes=True,
-                            # showgrid=True,
+                            # showgrid=False,
                             spikecolor="orange",
                             spikethickness=2)
     line_chart.update_layout(showlegend=False,
-                             plot_bgcolor="#d1dade",
+                             plot_bgcolor="#1c2b3b",
                              paper_bgcolor='rgba(0,0,0,0)',
                              margin=dict(t=0,l=80,b=0,r=40),
                              xaxis_title='Year', height=700, width=2600,
@@ -74,7 +75,7 @@ def create_line_chart(df):
                              font_family="Proxima Nova",
                              font_color=FONT_COLOR,
                              title_font_family="Proxima Nova",
-                             font_size=30,
+                             font_size=35,
                              hoverlabel = dict(font=dict(size=30)),
                              )
     return line_chart
@@ -86,15 +87,15 @@ def create_line_chart_gun_data(df_gun):
                                                     mode='lines+markers',
                                                     line={'color':LINE_COLOR}))
     gun_data_line_chart.update_xaxes(showspikes=True,
-                                    #  showgrid=True,
+                                     showgrid=False,
                                      spikecolor="green",
                                      spikesnap="cursor",
                                      spikemode="across")
     gun_data_line_chart.update_yaxes(showspikes=True,
-                                    #  showgrid=True,
+                                    #  showgrid=False,
                                      spikecolor="orange",
                                      spikethickness=2)
-    gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#d1dade",
+    gun_data_line_chart.update_layout(showlegend=False,plot_bgcolor="#1c2b3b",
                                       paper_bgcolor='rgba(0,0,0,0)',
                                       margin=dict(t=0,l=80,b=0,r=40),
                                       xaxis_title='Year',
@@ -114,50 +115,29 @@ def create_bar_chart_for_mental_illness(df):
                                 x="signs_of_mental_illness",
                                 y="count",
                                 hover_data=['count'],
-                                width=1400,
+                                width=1300,
                                 height=800,
-                                color_discrete_sequence =['#0a6194','#0a6194'],
+                                color_discrete_sequence =['#108f83','#108f83'],
                                 )
     mental_illness_bar.update_layout(clickmode='event+select',
                                      paper_bgcolor='rgba(0,0,0,0)',
                                      showlegend=False,
-                                     plot_bgcolor="#d1dade",
+                                     plot_bgcolor="#1c2b3b",
                                      margin=dict(t=50,l=200,b=80,r=40),
                                      xaxis_title='Signs of Mental Illness',
                                      yaxis_title='Number of Killings',
                                      font_family="Proxima Nova",
                                      title_font_family="Proxima Nova",
                                      hoverlabel = dict(font=dict(size=30)),
-                                     font_size=30,
+                                     font_size=35,
                                      font_color=FONT_COLOR,
                                      xaxis_tickangle=-45)
 
     return mental_illness_bar
 
 
-# def create_radar_chart_for_weapons(df):
-#     df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-#     df_group_by_weapon = df_group_by_weapon[df_group_by_weapon['count']>20]
-#     radar_chart_by_weapon = go.Figure(data=go.Scatterpolar(r=df_group_by_weapon['count'],
-#                                                            theta=df_group_by_weapon['armed'],
-#                                                            fill='toself'))
-
-#     radar_chart_by_weapon.update_layout(width=1400,
-#                                         height=800,
-#                                         font_size=30,
-#                                         font_color=FONT_COLOR,
-#                                         paper_bgcolor='rgba(0,0,0,0)',
-#                                         margin=dict(t=50,l=200,b=80,r=40),
-#                                         hovermode='x unified',
-#                                         polar=dict(radialaxis=dict(visible=True)),
-#                                         showlegend=False)
-#     return radar_chart_by_weapon
-
-
 def create_bar_chart_for_weapons(df):
     df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-    # if df_group_by_weapon['count'].max() >10:
-    #     df_group_by_weapon = df_group_by_weapon[df_group_by_weapon['count']>10]
     weapon_bar = px.bar(df_group_by_weapon,
                         y="armed",
                         x="count",
@@ -169,41 +149,19 @@ def create_bar_chart_for_weapons(df):
     weapon_bar.update_layout(clickmode='event+select',
                              paper_bgcolor='rgba(0,0,0,0)',
                              showlegend=False,
-                             plot_bgcolor="#d1dade",
+                             plot_bgcolor="#1c2b3b",
                              margin=dict(t=50,l=200,b=80,r=40),
                              xaxis_title='Signs of Mental Illness',
                              yaxis_title='Number of Killings',
                              font_family="Proxima Nova",
                              title_font_family="Proxima Nova",
                              hoverlabel = dict(font=dict(size=30)),
-                             font_size=30,
+                             font_size=35,
                              font_color=FONT_COLOR,
-                             xaxis_tickangle=-45)
+                             #xaxis_tickangle=-45
+                             )
 
     return weapon_bar
-
-# def create_pie_chart_for_weapons(df):
-#     df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
-#     df_group_by_weapon = df_group_by_weapon[df_group_by_weapon['count']>20]
-#     pie_chart_weapons = go.Figure(data=[go.Pie(labels=df_group_by_weapon['armed'],
-#                                                values=df_group_by_weapon['count'],
-#                                                textinfo='percent',
-#                                                insidetextorientation='auto'
-#                          )])
-#     pie_chart_weapons.update_layout(clickmode='event+select',
-#                               margin={"r":0,"t":0,"l":0,"b":0})
-#     pie_chart_weapons.update_layout(showlegend=True,
-#                                     plot_bgcolor="#d1dade",
-#                                     width=1400,
-#                                     height=800,
-#                                     font_size=30,
-#                                     font_color=FONT_COLOR,
-#                                     hoverlabel = dict(font=dict(size=30)),
-#                                     paper_bgcolor='rgba(0,0,0,0)',
-#                                     margin=dict(t=0,l=80,b=0,r=40),
-#                                     font_family="Proxima Nova",
-#                                     title_font_family="Proxima Nova")
-#     return pie_chart_weapons
 
 
 def create_bar_chart_for_threat_level(df):
@@ -216,7 +174,7 @@ def create_bar_chart_for_threat_level(df):
                                     height=800,
                                     color_discrete_sequence =['#be584b','#be584b','#be584b'])
     threat_level_bar_chart.update_layout(showlegend=True,
-                                         plot_bgcolor="#d1dade",
+                                         plot_bgcolor="#1c2b3b",
                                          clickmode='event+select',
                                          paper_bgcolor='rgba(0,0,0,0)',
                                          margin=dict(t=50,l=200,b=80,r=40),
@@ -227,7 +185,7 @@ def create_bar_chart_for_threat_level(df):
                                          font_family="Proxima Nova",
                                          font_color=FONT_COLOR,
                                          title_font_family="Proxima Nova",
-                                         font_size=30,
+                                         font_size=35,
                                          xaxis_tickangle=-45)
     return threat_level_bar_chart
 
@@ -237,11 +195,11 @@ def create_bar_chart_for_fleeing(df):
                                x="flee",
                                y="count",
                                hover_data=['count'],
-                               width =1400,
+                               width =1250,
                                height=800,
                                color_discrete_sequence = ['#db8746','#db8746','#db8746','#db8746'])
     fleeing_bar_chart.update_layout(showlegend=True,
-                                    plot_bgcolor="#d1dade",
+                                    plot_bgcolor="#1c2b3b",
                                     clickmode='event+select',
                                     paper_bgcolor='rgba(0,0,0,0)',
                                     margin=dict(t=50,l=200,b=80,r=40),
@@ -252,7 +210,7 @@ def create_bar_chart_for_fleeing(df):
                                     font_family="Proxima Nova",
                                     font_color=FONT_COLOR,
                                     title_font_family="Proxima Nova",
-                                    font_size=30,
+                                    font_size=35,
                                     xaxis_tickangle=-45)
     return fleeing_bar_chart
 
@@ -263,12 +221,12 @@ def create_bar_chart_for_race(df):
                             x="race",
                             y="count",
                             hover_data=['count'],
-                            color_discrete_sequence =['#cfbe99','#cfbe99','#cfbe99','#cfbe99','#cfbe99','#cfbe99'],
+                            color_discrete_sequence =['#dba912','#dba912','#dba912','#dba912','#dba912','#dba912'],
                             width =1400, height=800,
                             )
 
     race_bar_chart.update_layout(showlegend=True,
-                                 plot_bgcolor="#d1dade",
+                                 plot_bgcolor="#1c2b3b",
                                  paper_bgcolor='rgba(0,0,0,0)',
                                  clickmode='event+select',
                                  margin=dict(t=50,l=200,b=80,r=40),
@@ -279,7 +237,7 @@ def create_bar_chart_for_race(df):
                                  font_color=FONT_COLOR,
                                  title_font_family="Proxima Nova",
                                  hoverlabel = dict(font=dict(size=30)),
-                                 font_size=30,
+                                 font_size=35,
                                  xaxis_tickangle=-45)
     return race_bar_chart
 
@@ -294,9 +252,9 @@ def create_bar_chart_for_age_and_gender(df):
                             barmode = 'group',
                             width=1400,
                             height=800,
-                            color_discrete_map={'Male':'#8c614f','Female':'#834f8c'},
+                            color_discrete_map={'Male':'#b8816a','Female':'#834f8c'},
                             category_orders ={'gender':['Male','Female']})
-    bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#d1dade",
+    bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#1c2b3b",
                                  paper_bgcolor='rgba(0,0,0,0)',
                                  clickmode='event+select',
                                  margin=dict(t=50,l=200,b=0,r=40),
@@ -306,7 +264,7 @@ def create_bar_chart_for_age_and_gender(df):
                                  font_color=FONT_COLOR,
                                  hoverlabel = dict(font=dict(size=30)),
                                  title_font_family="Proxima Nova",
-                                 font_size=30,
+                                 font_size=35,
                                  xaxis_tickangle=-45)
     return bar_age_gender
 
@@ -314,7 +272,7 @@ def create_bar_chart_for_age_and_gender(df):
 
 #Sankey Diagram
 def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
-    colorPalette = ['#cfbe99','#8c614f','#8c614f','#0a6194','#be584b','#db8746']
+    colorPalette = ['#dba912','#b8816a','#b8816a','#108f83','#be584b','#db8746']
     labelList = []
     colorNumList = []
     for catCol in cat_cols:
@@ -348,8 +306,8 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
     # creating the sankey diagram
     sankey = go.Figure(data=[go.Sankey(
         node = dict(
-          pad = 15,
-          thickness = 24,
+          pad = 20,
+          thickness = 22,
           line = dict(
             color = "green",
             width = 0.8
@@ -361,30 +319,30 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
           source = sourceTargetDf['sourceID'],
           target = sourceTargetDf['targetID'],
           value = sourceTargetDf['count'],
-          color='#95b5bf'
+          color='#6a889c'
         ),
-
+        textfont=dict(color='red',size=42)
     )])
     sankey.update_traces(customdata=['Race','Age','Gender','Threat Level','Fleeing'])
 
-    sankey.update_layout(title_text='<b>Race\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
-                                  Age \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
-                                  Gender\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
-                                  Signs of Mental Illness \t\t\t\t\t\t \
-                                  Threat Level\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+    sankey.update_layout(title_text='<b>Race\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\
+                                  Age \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Gender\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
+                                  Signs of Mental Illness \t\t\t\t\
+                                  Threat Level\t\t\t\t\t\t\t \
                                   Fleeing<b>',
                          title_pad=dict(t=0,l=0,b=60,r=0),
-                         width=4100,
+                         width=4250,
                          height=1000,
-                         plot_bgcolor="#d1dade",
+                         plot_bgcolor="#1c2b3b",
                          hoverlabel = dict(font=dict(size=30)),
                          margin=dict(t=70,l=100,b=20,r=100),
                          paper_bgcolor='rgba(0,0,0,0)',
                          font_family="Proxima Nova",
-                         font_color=FONT_COLOR,
+                         font_color='white',
                          title_font_family="Proxima Nova",
                          #font_color='#edf3f7',
-                         font_size=28)
+                         font_size=32)
     return sankey
 
 def create_sankey_diagram(df):
