@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from assets.state_mapping import state_mapping
 
 FONT_COLOR='white'
-LINE_COLOR='#FEE699'
+LINE_COLOR='#f2c029'
 
 def get_country_list_for_dropdown(df):
     country_mapping = {}
@@ -30,7 +30,7 @@ def create_choropleth_map(df):
     choropleth_map = go.Figure(data=go.Choropleth(locations = df_group_by_state['state'],
                                                   z = df_group_by_state['count'],
                                                   locationmode = 'USA-states',
-                                                  colorscale = 'YlOrRd',
+                                                  colorscale = 'Greens',
                                                   colorbar_title = "Number of Deaths"))
     choropleth_map.update_layout(width=1600,
                                  height=700,
@@ -114,7 +114,7 @@ def create_bar_chart_for_mental_illness(df):
                                 hover_data=['count'],
                                 width=1300,
                                 height=800,
-                                color_discrete_sequence =['#108f83','#108f83'],
+                                color_discrete_sequence =['#f2c029','#f2c029'],
                                 )
     mental_illness_bar.update_layout(clickmode='event+select',
                                      paper_bgcolor='rgba(0,0,0,0)',
@@ -133,15 +133,23 @@ def create_bar_chart_for_mental_illness(df):
     return mental_illness_bar
 
 
+def group_into_others(count,armed):
+    if count<25:
+        return 'Others'
+    else:
+        return armed
+
 def create_bar_chart_for_weapons(df):
     df_group_by_weapon = df.groupby('armed')['name'].agg('count').reset_index().rename(columns={'name':'count'})
+    df_group_by_weapon['armed'] = df_group_by_weapon[['count','armed']].apply(lambda x: group_into_others(*x), axis=1)
+    df_group_by_weapon = df_group_by_weapon.groupby('armed')['armed','count'].agg('sum').reset_index()
     weapon_bar = px.bar(df_group_by_weapon,
                         y="armed",
                         x="count",
                         hover_data=['count'],
                         width=1400,
-                        height=800,
-                        color_discrete_sequence =['#a8c96f','#a8c96f'],
+                        height=1000,
+                        color_discrete_sequence =['#f2c029','#f2c029'],
                         )
     weapon_bar.update_layout(clickmode='event+select',
                              paper_bgcolor='rgba(0,0,0,0)',
@@ -152,6 +160,7 @@ def create_bar_chart_for_weapons(df):
                              yaxis_title='Number of Killings',
                              font_family="Proxima Nova",
                              title_font_family="Proxima Nova",
+                             yaxis={'categoryorder':'total ascending'},
                              hoverlabel = dict(font=dict(size=30)),
                              font_size=35,
                              font_color=FONT_COLOR,
@@ -167,8 +176,8 @@ def create_bar_chart_for_threat_level(df):
                                     y="count", #color=''
                                     hover_data=['count'],
                                     width =1400,
-                                    height=800,
-                                    color_discrete_sequence =['#be584b','#be584b','#be584b'])
+                                    height=1000,
+                                    color_discrete_sequence =['#f2c029','#f2c029','#f2c029'])
     threat_level_bar_chart.update_layout(showlegend=True,
                                          plot_bgcolor="#1c2b3b",
                                          clickmode='event+select',
@@ -192,8 +201,8 @@ def create_bar_chart_for_fleeing(df):
                                y="count",
                                hover_data=['count'],
                                width =1250,
-                               height=800,
-                               color_discrete_sequence = ['#db8746','#db8746','#db8746','#db8746'])
+                               height=1000,
+                               color_discrete_sequence = ['#f2c029','#f2c029','#f2c029','#f2c029'])
     fleeing_bar_chart.update_layout(showlegend=True,
                                     plot_bgcolor="#1c2b3b",
                                     clickmode='event+select',
@@ -217,7 +226,7 @@ def create_bar_chart_for_race(df):
                             x="race",
                             y="count",
                             hover_data=['count'],
-                            color_discrete_sequence =['#dba912','#dba912','#dba912','#dba912','#dba912','#dba912'],
+                            color_discrete_sequence =['#f2c029','#f2c029','#f2c029','#f2c029','#f2c029','#f2c029'],
                             width =1400, height=800,
                             )
 
@@ -248,7 +257,7 @@ def create_bar_chart_for_age_and_gender(df):
                             barmode = 'group',
                             width=1400,
                             height=800,
-                            color_discrete_map={'Male':'#b8816a','Female':'#834f8c'},
+                            color_discrete_map={'Male':'#398EEA','Female':'#ff96cc'},
                             category_orders ={'gender':['Male','Female']})
     bar_age_gender.update_layout(showlegend=True,plot_bgcolor="#1c2b3b",
                                  paper_bgcolor='rgba(0,0,0,0)',
@@ -256,7 +265,7 @@ def create_bar_chart_for_age_and_gender(df):
                                  margin=dict(t=50,l=200,b=0,r=40),
                                  xaxis_title='Age and Gender',
                                  yaxis_title='Number of Killings',
-                                 font_family="Proxima Nova",
+                                 font_family="Pro   xima Nova",
                                  font_color=FONT_COLOR,
                                  hoverlabel = dict(font=dict(size=30)),
                                  title_font_family="Proxima Nova",
@@ -267,8 +276,8 @@ def create_bar_chart_for_age_and_gender(df):
 
 
 #Sankey Diagram
-def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
-    colorPalette = ['#dba912','#b8816a','#b8816a','#108f83','#be584b','#db8746']
+def generateSankey(df,startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value, cat_cols=[], value_cols='',title='Sankey Diagram'):
+    colorPalette = ['#f2c029','#b8816a','#b8816a','#108f83','#be584b','#db8746']
     labelList = []
     colorNumList = []
     for catCol in cat_cols:
@@ -320,7 +329,6 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
         textfont=dict(color='red',size=42)
     )])
     sankey.update_traces(customdata=['Race','Age','Gender','Threat Level','Fleeing'])
-
     sankey.update_layout(title_text='<b>Race\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\
                                   Age \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
                                   Gender\t\t\t\t\t\t\t\t\t\t\t\t\t\t \
@@ -340,9 +348,37 @@ def generateSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
                          font_size=32)
     return sankey
 
-def create_sankey_diagram(df):
-    df_grouped_sankey = df.groupby(['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
-    sankey_diagram = generateSankey(df_grouped_sankey,
-                                   ['race','age_bins','gender','signs_of_mental_illness','threat_level','flee'],
-                                   value_cols='count',)
-    return sankey_diagram
+
+
+def create_parallel_coordinate(df):
+    df_pc = df.groupby(['state','race','age_bins','gender','signs_of_mental_illness','flee','threat_level'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
+    fig = go.Figure(go.Parcats(
+    dimensions=[
+        {'label': 'Race',
+         'values': df_pc['race']},
+        {'label': 'Gender',
+         'values': df_pc['gender']},
+        {'label': 'Flee',
+         'values': df_pc['flee']},
+        {'label': 'Age',
+         'values': df_pc['age_bins']},
+        {'label': 'Signs of Mental Illness',
+         'values': df_pc['signs_of_mental_illness']},
+        {'label': 'Threat Level',
+         'values': df_pc['threat_level']}],
+    line={'color': df_pc['state'].astype('category').cat.codes, 'colorscale': 'greens'},
+    #labelfont={'color':'#c73732', 'size':30},
+    hoveron='category',
+    hoverinfo='count+probability',
+))
+    fig.update_layout(width=4200,
+                      height=1000,
+                      font_size=45,
+                      margin=dict(t=70,l=100,b=20,r=100),
+                      font_family="Proxima Nova",
+                      font_color='white',
+                      title_font_family="Proxima Nova",
+                      hoverlabel = dict(font=dict(size=80)),
+                      paper_bgcolor='rgba(0,0,0,0)',)
+
+    return fig

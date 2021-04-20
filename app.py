@@ -407,7 +407,7 @@ html.Div([
             )], style={'flex':'30%',
                         'margin-right':'60px',
                         'box-shadow': 'rgba(255, 255, 255, 0.15) -1px -1px 10px 10px',
-                        'padding':'20px',
+                        'padding':'10px',
                         'background-color':'#1c2b3b'}
             ,className='weapon-block'),
 
@@ -471,15 +471,17 @@ style={'display':'flex',
         html.Div([
                 dcc.Graph(
                         id='sankey-diagram',
-                        figure=create_sankey_diagram(df),
+                        figure=create_parallel_coordinate(df),
                         style={'margin-left':'50px',
                                'font-color':'white',
-                               'margin-right':'50px'},
+                               'margin-right':'50px',
+                               'text-shadow': None,
+                               'fill':'#fff'},
                         config={'doubleClick':'reset',
                                 'displayModeBar': False},
 
                 ),
-                html.H3('Sankey Diagram',
+                html.H3('Parallel Categories Diagram',
                         style={
                                 'textAlign' : 'center',
                                 'color': 'white',
@@ -856,7 +858,8 @@ def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, men
         return dash.no_update
     return line_chart
 
-#update sankey diagram
+
+#update parallel categories diagram
 @app.callback(
     Output('sankey-diagram', 'figure'),
     [Input('bar-chart-race', 'clickData'),
@@ -869,8 +872,8 @@ def update_line_chart(mapClick, mapDropdown, raceBarChartClick, ageBarClick, men
     Input('bar-chart-threat-level','clickData'),
     Input('bar-chart-fleeing','clickData'),
     Input('radar-chart-weapons','clickData'),
-    Input('reset_button','n_clicks')], prevent_initial_call=True)
-def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
+    Input('reset_button','n_clicks')])
+def update_pc(raceBarChartClick, ageBarClick, lineChartClick, mapClick, mapDropdown, mentalBarClick, gunClick, threatBarClick, fleeBarClick, armClick, n_clicks):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0].split('.')[0]
     if changed_id=='reset_button':
         return create_sankey_diagram(df)
@@ -881,7 +884,7 @@ def update_sankey_diagram(raceBarChartClick, ageBarClick, lineChartClick, mapCli
         state = mapDropdown
         viz_states['map_dropdown'] = 1
     filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
-    sankey_diagram = create_sankey_diagram(filtered_df)
+    sankey_diagram = create_parallel_coordinate(filtered_df)
     return sankey_diagram
 
 #update indicator graph
@@ -920,4 +923,4 @@ def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapCl
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
