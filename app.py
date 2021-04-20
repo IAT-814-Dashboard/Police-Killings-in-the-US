@@ -11,7 +11,7 @@ from visualization_helper_functions import *
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],title='Police Killings in the United States')
 server = app.server
 
 df = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
