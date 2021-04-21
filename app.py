@@ -11,7 +11,9 @@ from visualization_helper_functions import *
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__,
+                external_stylesheets=[dbc.themes.BOOTSTRAP],
+                meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1'}])
 server = app.server
 
 df = pd.read_json('data/police-killings-integrated-dataset-2021-03-20.json.gz')
@@ -916,7 +918,6 @@ def update_indicator_graph(lineChartClick, raceBarChartClick, ageBarClick, mapCl
         filtered_df = get_filtered_df(gunStartDate, gunEndDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
     else:
         filtered_df = get_filtered_df(startDate, endDate, gunStartDate, gunEndDate, state, race, gender, age, mental_illness_value, threat_value, flee_value, arms_value)
-
     return len(filtered_df)
 
 #-----------------------------------------------------------------------------------------------------------------------------------
