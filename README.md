@@ -15,3 +15,4 @@ We have used different visualization charts like line charts, choropleth maps, b
 ## Demo
 You can checkout the live version of the app [here](https://iat-814-police-killings.herokuapp.com/)
 
+![demo](/assets/demo-1.png)
