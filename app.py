@@ -13,6 +13,7 @@ import dash_daq as daq
 
 app = dash.Dash(__name__,
                 external_stylesheets=[dbc.themes.BOOTSTRAP],
+                title='Police Killings in the United States',
                 meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1'}])
 server = app.server
 
