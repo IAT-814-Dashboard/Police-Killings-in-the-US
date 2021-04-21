@@ -103,7 +103,7 @@ def create_line_chart_gun_data(df_gun):
                                       font_color=FONT_COLOR,
                                       hoverlabel = dict(font=dict(size=30)),
                                       title_font_family="Proxima Nova",
-                                      font_size=30)
+                                      font_size=35)
     return gun_data_line_chart
 
 def create_bar_chart_for_mental_illness(df):
@@ -349,7 +349,6 @@ def generateSankey(df,startDate, endDate, gunStartDate, gunEndDate, state, race,
     return sankey
 
 
-
 def create_parallel_coordinate(df):
     df_pc = df.groupby(['state','race','age_bins','gender','signs_of_mental_illness','flee','threat_level'])['name'].agg('count').reset_index().rename(columns={'name':'count'})
     fig = go.Figure(go.Parcats(
@@ -367,12 +366,13 @@ def create_parallel_coordinate(df):
         {'label': 'Threat Level',
          'values': df_pc['threat_level']}],
     line={'color': df_pc['state'].astype('category').cat.codes, 'colorscale': 'greens'},
+    tickfont={'size': 45, 'family': 'Proxima Nova'},
     #labelfont={'color':'#c73732', 'size':30},
     hoveron='category',
     hoverinfo='count+probability',
 ))
     fig.update_layout(width=4200,
-                      height=1000,
+                      height=2000,
                       font_size=45,
                       margin=dict(t=70,l=100,b=20,r=100),
                       font_family="Proxima Nova",
